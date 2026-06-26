@@ -1,121 +1,426 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>QueueStorm Investigator</title>
-    <style>
-      :root {
-        color-scheme: light;
-        --ink: #17202a;
-        --muted: #586574;
-        --line: #d9e1ea;
-        --surface: #ffffff;
-        --panel: #f6f8fb;
-        --accent: #0f766e;
-        --accent-2: #be123c;
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        color: var(--ink);
-        background: var(--panel);
-      }
-      header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bento · QueueStorm</title>
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f4f6fa;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: #0b1a2b;
+    }
+
+    /* ----- BENTO LAYOUT ----- */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* cards */
+    .bento-card {
+      background: #ffffff;
+      border-radius: 32px;
+      padding: 24px 24px 28px;
+      box-shadow: 0 12px 28px -8px rgba(0,20,40,0.08), 0 4px 12px rgba(0,0,0,0.02);
+      transition: box-shadow 0.2s ease;
+      backdrop-filter: blur(2px);
+      border: 1px solid rgba(255,255,255,0.5);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bento-card:hover {
+      box-shadow: 0 20px 36px -12px rgba(0,20,40,0.12);
+    }
+
+    /* header card */
+    .header-card {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 28px;
+      background: #ffffffdd;
+      backdrop-filter: blur(4px);
+      border-bottom: 1px solid #eef2f6;
+    }
+
+    .header-card h1 {
+      font-weight: 700;
+      font-size: 1.9rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(145deg, #0a1e2e, #1f3a4b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-card h1 small {
+      font-size: 0.9rem;
+      font-weight: 400;
+      background: #eef2f6;
+      -webkit-text-fill-color: #1e3a4d;
+      padding: 4px 14px;
+      border-radius: 40px;
+      letter-spacing: 0.01em;
+    }
+
+    .health-badge {
+      background: #e9ecf0;
+      padding: 8px 18px;
+      border-radius: 60px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #1f3a4b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .health-badge .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 10px;
+      background: #2b8c6e;
+      display: inline-block;
+    }
+
+    .health-badge .dot.off {
+      background: #b13e4b;
+    }
+
+    /* right card (result) */
+    .result-card {
+      grid-column: 2 / 3;
+    }
+
+    /* toolbar inside cards */
+    .card-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .card-toolbar label {
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: #3b5568;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: #eef2f6;
+      border: none;
+      border-radius: 60px;
+      padding: 8px 18px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #1a3142;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: #0f2d3f;
+      color: white;
+      box-shadow: 0 4px 8px -4px rgba(10,40,60,0.2);
+    }
+
+    .btn-primary:hover {
+      background: #1a3f55;
+      transform: scale(0.97);
+    }
+
+    .btn-secondary {
+      background: #e3e9f0;
+    }
+
+    .btn-secondary:hover {
+      background: #d0d9e3;
+    }
+
+    .btn-accent {
+      background: #1d6f5c;
+      color: white;
+    }
+
+    .btn-accent:hover {
+      background: #14806a;
+    }
+
+    /* textarea & pre */
+    .code-area {
+      width: 100%;
+      min-height: 320px;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      padding: 18px 20px;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      background: #fafcff;
+      color: #0c1f2e;
+      resize: vertical;
+      transition: 0.15s;
+      flex: 1;
+    }
+
+    .code-area:focus {
+      outline: 2px solid #b9d0e0;
+      outline-offset: 2px;
+      background: #ffffff;
+    }
+
+    pre.code-area {
+      background: #f4f8fe;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+      overflow: auto;
+      min-height: 280px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .status-line {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.8rem;
+      color: #4a6a80;
+      font-weight: 500;
+      margin-top: 8px;
+    }
+
+    .error-tag {
+      color: #bf3c4b;
+      font-weight: 700;
+    }
+
+    /* ----- ROBOT (mini companion) ----- */
+    .robot-wrapper {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+      margin-bottom: -6px;
+      pointer-events: none;
+    }
+
+    .robot-container {
+      background: #dce5ef;
+      padding: 12px 24px 12px 28px;
+      border-radius: 80px;
+      backdrop-filter: blur(4px);
+      background: #eef3f9cc;
+      border: 1px solid #ffffffaa;
+      box-shadow: 0 8px 18px -6px rgba(0,20,30,0.12);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      pointer-events: auto;
+      transition: 0.2s;
+    }
+
+    .robot-container:hover {
+      background: #e5ecf5dd;
+    }
+
+    .robot-face {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: default;
+    }
+
+    .robot-eye {
+      width: 18px;
+      height: 18px;
+      background: #1d3140;
+      border-radius: 40px;
+      transition: 0.08s linear;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 0 2px #a6bbc9;
+      position: relative;
+      transform: translate(0,0);
+      will-change: transform;
+    }
+
+    .robot-eye::after {
+      content: '';
+      display: block;
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 20px;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      opacity: 0.7;
+      transition: 0.1s;
+    }
+
+    .robot-mouth {
+      font-size: 1.6rem;
+      line-height: 1;
+      margin-left: 4px;
+      letter-spacing: -2px;
+      color: #1d3140;
+    }
+
+    .robot-label {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: #1a3345;
+      background: #ffffffaa;
+      padding: 2px 12px;
+      border-radius: 30px;
+      letter-spacing: 0.02em;
+    }
+
+    /* responsive */
+    @media (max-width: 780px) {
+      .bento-grid {
+        grid-template-columns: 1fr;
         gap: 16px;
-        padding: 18px clamp(16px, 4vw, 48px);
-        border-bottom: 1px solid var(--line);
-        background: var(--surface);
       }
-      h1 { margin: 0; font-size: clamp(22px, 3vw, 34px); letter-spacing: 0; }
-      main {
-        display: grid;
-        grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.05fr);
-        gap: 18px;
-        padding: 18px clamp(16px, 4vw, 48px) 36px;
+      .result-card {
+        grid-column: 1 / 2;
       }
-      section {
-        min-width: 0;
+      .header-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
       }
-      label {
-        display: block;
-        margin: 0 0 8px;
-        font-weight: 700;
+      .robot-wrapper {
+        justify-content: center;
       }
-      textarea, pre {
-        width: 100%;
-        min-height: 520px;
-        margin: 0;
-        padding: 14px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: var(--surface);
-        color: var(--ink);
-        font: 14px/1.5 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-        overflow: auto;
+      .code-area {
+        min-height: 240px;
       }
-      .toolbar {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-bottom: 10px;
-      }
-      button {
-        min-height: 38px;
-        border: 0;
-        border-radius: 8px;
-        padding: 0 14px;
-        background: var(--accent);
-        color: #fff;
-        font-weight: 700;
-        cursor: pointer;
-      }
-      button.secondary {
-        background: #344054;
-      }
-      .status {
-        color: var(--muted);
-        font-size: 14px;
-      }
-      .error {
-        color: var(--accent-2);
-        font-weight: 700;
-      }
-      @media (max-width: 900px) {
-        main { grid-template-columns: 1fr; }
-        textarea, pre { min-height: 360px; }
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <h1>QueueStorm Investigator</h1>
-      <span class="status" id="health">Checking API...</span>
-    </header>
-    <main>
-      <section>
-        <div class="toolbar">
-          <button class="secondary" id="loadSample">Load Sample</button>
-          <button id="analyze">Analyze</button>
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 12px; }
+      .bento-card { padding: 16px; }
+      .robot-container { padding: 8px 16px; flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bento-grid">
+
+    <!-- HEADER CARD -->
+    <div class="bento-card header-card">
+      <h1>
+        QueueStorm
+        <small>investigator</small>
+      </h1>
+      <div class="health-badge" id="healthBadge">
+        <span class="dot" id="healthDot"></span>
+        <span id="healthText">checking…</span>
+      </div>
+    </div>
+
+    <!-- LEFT CARD: payload -->
+    <div class="bento-card">
+      <div class="card-toolbar">
+        <label for="payload">📋 Ticket JSON</label>
+        <div class="btn-group">
+          <button class="btn btn-secondary" id="loadSample">📄 sample</button>
+          <button class="btn btn-primary" id="analyze">⚡ analyze</button>
         </div>
-        <label for="payload">Ticket JSON</label>
-        <textarea id="payload" spellcheck="false"></textarea>
-      </section>
-      <section>
-        <div class="toolbar">
-          <span class="status" id="resultStatus">Ready</span>
+      </div>
+      <textarea class="code-area" id="payload" spellcheck="false"></textarea>
+      <div class="status-line">
+        <span id="payloadStatus">ready</span>
+      </div>
+    </div>
+
+    <!-- RIGHT CARD: result -->
+    <div class="bento-card result-card">
+      <div class="card-toolbar">
+        <label for="result">📊 Analysis</label>
+        <div class="btn-group">
+          <span class="status-line" id="resultStatus" style="margin:0;">Ready</span>
         </div>
-        <label for="result">Analysis Result</label>
-        <pre id="result">{}</pre>
-      </section>
-    </main>
-    <script>
-      const sample = {
+      </div>
+      <pre class="code-area" id="result">{}</pre>
+      <div class="status-line">
+        <span id="resultMeta">output</span>
+      </div>
+    </div>
+
+    <!-- MINI ROBOT (bento full-width) -->
+    <div class="robot-wrapper">
+      <div class="robot-container" id="robotContainer">
+        <div class="robot-face">
+          <span class="robot-eye" id="eyeLeft"></span>
+          <span class="robot-eye" id="eyeRight"></span>
+          <span class="robot-mouth">⌣</span>
+        </div>
+        <span class="robot-label">tracker</span>
+        <span style="font-size:0.75rem; color:#2a4c62;">✦ follow</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      // ---------- DOM refs ----------
+      const payload = document.getElementById('payload');
+      const result = document.getElementById('result');
+      const resultStatus = document.getElementById('resultStatus');
+      const healthText = document.getElementById('healthText');
+      const healthDot = document.getElementById('healthDot');
+      const loadSampleBtn = document.getElementById('loadSample');
+      const analyzeBtn = document.getElementById('analyze');
+
+      // Robot eyes
+      const eyeLeft = document.getElementById('eyeLeft');
+      const eyeRight = document.getElementById('eyeRight');
+      const robotContainer = document.getElementById('robotContainer');
+
+      // ---------- sample ticket ----------
+      const SAMPLE_TICKET = {
         ticket_id: "TKT-DEMO-001",
         complaint: "I sent 5000 taka to the wrong number around 2pm today. Please help.",
         language: "en",
@@ -134,53 +439,138 @@
         ]
       };
 
-      const payload = document.getElementById("payload");
-      const result = document.getElementById("result");
-      const resultStatus = document.getElementById("resultStatus");
-      const health = document.getElementById("health");
-
-      function pretty(value) {
-        return JSON.stringify(value, null, 2);
+      // ---------- helpers ----------
+      function pretty(obj) {
+        return JSON.stringify(obj, null, 2);
       }
 
+      // ---------- API health check ----------
       async function checkHealth() {
         try {
-          const response = await fetch("/health");
-          const data = await response.json();
-          health.textContent = data.status === "ok" ? "API online" : "API unavailable";
-        } catch {
-          health.textContent = "API unavailable";
-          health.className = "status error";
+          const resp = await fetch('/health');
+          const data = await resp.json();
+          if (data.status === 'ok') {
+            healthText.textContent = 'online';
+            healthDot.className = 'dot';
+          } else {
+            healthText.textContent = 'unstable';
+            healthDot.className = 'dot off';
+          }
+        } catch (_) {
+          healthText.textContent = 'unavailable';
+          healthDot.className = 'dot off';
         }
       }
 
-      document.getElementById("loadSample").addEventListener("click", () => {
-        payload.value = pretty(sample);
-      });
-
-      document.getElementById("analyze").addEventListener("click", async () => {
-        resultStatus.textContent = "Analyzing...";
-        resultStatus.className = "status";
+      // ---------- analyze ----------
+      async function runAnalysis() {
+        resultStatus.textContent = 'analyzing…';
+        resultStatus.className = 'status-line';
         try {
-          const body = JSON.parse(payload.value);
-          const response = await fetch("/analyze-ticket", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+          const raw = payload.value.trim();
+          if (!raw) throw new Error('payload is empty');
+          const body = JSON.parse(raw);
+
+          const response = await fetch('/analyze-ticket', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
           });
+
           const data = await response.json();
           result.textContent = pretty(data);
-          resultStatus.textContent = response.ok ? "Complete" : `HTTP ${response.status}`;
-          resultStatus.className = response.ok ? "status" : "status error";
-        } catch (error) {
-          result.textContent = String(error);
-          resultStatus.textContent = "Invalid request";
-          resultStatus.className = "status error";
+          resultStatus.textContent = response.ok ? '✓ complete' : `⚠ http ${response.status}`;
+          if (!response.ok) resultStatus.className = 'status-line error-tag';
+          else resultStatus.className = 'status-line';
+        } catch (err) {
+          result.textContent = String(err);
+          resultStatus.textContent = '✗ invalid request';
+          resultStatus.className = 'status-line error-tag';
+        }
+      }
+
+      // ---------- load sample ----------
+      function loadSample() {
+        payload.value = pretty(SAMPLE_TICKET);
+        document.getElementById('payloadStatus').textContent = 'sample loaded';
+      }
+
+      // ---------- ROBOT: follow mouse click ----------
+      function moveEyes(clientX, clientY) {
+        const rect = robotContainer.getBoundingClientRect();
+        // container center
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+
+        // distance from center (clamped)
+        const dx = clientX - cx;
+        const dy = clientY - cy;
+        const maxDist = 18; // max pixel shift
+        const angle = Math.atan2(dy, dx);
+        const dist = Math.min(Math.hypot(dx, dy), maxDist);
+
+        const shiftX = Math.cos(angle) * dist;
+        const shiftY = Math.sin(angle) * dist;
+
+        // apply to both eyes (symmetric)
+        const transform = `translate(${shiftX}px, ${shiftY}px)`;
+        eyeLeft.style.transform = transform;
+        eyeRight.style.transform = transform;
+      }
+
+      // reset eyes to center
+      function resetEyes() {
+        eyeLeft.style.transform = 'translate(0px, 0px)';
+        eyeRight.style.transform = 'translate(0px, 0px)';
+      }
+
+      // click listener on document: move robot eyes
+      document.addEventListener('click', (e) => {
+        moveEyes(e.clientX, e.clientY);
+        // also change mouth to tiny 'o' for a moment? just for fun
+        const mouth = document.querySelector('.robot-mouth');
+        if (mouth) {
+          mouth.textContent = 'o';
+          setTimeout(() => { mouth.textContent = '⌣'; }, 300);
         }
       });
 
-      payload.value = pretty(sample);
+      // on mouse leave window reset eyes
+      document.addEventListener('mouseleave', () => {
+        resetEyes();
+        const mouth = document.querySelector('.robot-mouth');
+        if (mouth) mouth.textContent = '⌣';
+      });
+
+      // also when mouse enters window, keep eyes at last known? we reset on leave
+
+      // ---------- init UI ----------
+      payload.value = pretty(SAMPLE_TICKET);
+      result.textContent = '{}';
+      resultStatus.textContent = 'ready';
+
+      // event listeners
+      loadSampleBtn.addEventListener('click', loadSample);
+      analyzeBtn.addEventListener('click', runAnalysis);
+
+      // health check
       checkHealth();
-    </script>
-  </body>
+
+      // extra: if textarea changes, update status
+      payload.addEventListener('input', () => {
+        document.getElementById('payloadStatus').textContent = 'editing';
+      });
+
+      // small robot extra: click on robot resets eyes
+      robotContainer.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetEyes();
+        const mouth = document.querySelector('.robot-mouth');
+        if (mouth) mouth.textContent = '⌣';
+      });
+
+      console.log('🚀 Bento UI + robot tracker ready');
+    })();
+  </script>
+</body>
 </html>
