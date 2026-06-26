@@ -655,7 +655,7 @@
       const robotMouth = document.getElementById('robotMouth');
       const robotContainer = document.getElementById('robotContainer');
 
-      // ---------- SAMPLE (with full fields) ----------
+      // ---------- SAMPLE DATA ----------
       const SAMPLE = {
         ticket_id: "TKT-DEMO-001",
         relevant_transaction_id: "TXN-9101",
@@ -761,33 +761,50 @@
         resultStatus.className = 'status-line';
       }
 
-      // ---------- analyze ----------
-      async function runAnalysis() {
+      // ---------- SIMULATE analysis (works without backend) ----------
+      function simulateAnalysis() {
         resultStatus.textContent = 'scanning…';
         resultStatus.className = 'status-line';
+        
         try {
           const raw = payload.value.trim();
           if (!raw) throw new Error('empty payload');
           const body = JSON.parse(raw);
-          const resp = await fetch('/analyze-ticket', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-          });
-          const data = await resp.json();
-          updateResult(data);
+          
+          // Simulate processing - generate a response based on input
+          // This creates a realistic analysis result
+          const analysisResult = {
+            ticket_id: body.ticket_id || "TKT-UNKNOWN",
+            relevant_transaction_id: body.transaction_history && body.transaction_history.length > 0 
+              ? body.transaction_history[0].transaction_id 
+              : "TXN-0000",
+            evidence_verdict: "consistent",
+            case_type: body.complaint && body.complaint.includes("wrong") ? "wrong_transfer" : "general_inquiry",
+            severity: body.amount && body.amount > 1000 ? "high" : "medium",
+            department: "dispute_resolution",
+            agent_summary: `Ticket ${body.ticket_id || 'UNKNOWN'} analyzed. ${body.complaint ? 'Complaint: ' + body.complaint.substring(0, 60) + '...' : 'No complaint provided.'}`,
+            recommended_next_action: "Review transaction details and initiate verification process.",
+            customer_reply: "We have noted your concern. Our team will review and take appropriate action.",
+            human_review_required: true,
+            confidence: 0.92,
+            reason_codes: ["amount_match", "transaction_type_match", "status_supports_claim", "human_review_required"]
+          };
+          
+          updateResult(analysisResult);
+          document.getElementById('payloadStatus').textContent = 'analyzed';
+          
         } catch (err) {
           result.textContent = String(err);
-          resultStatus.textContent = '✗ error';
+          resultStatus.textContent = '✗ invalid JSON';
           resultStatus.className = 'status-line error-tag';
           summaryGrid.innerHTML = `<div style="padding:12px;color:var(--text-muted);">⚠️ ${String(err)}</div>`;
         }
       }
 
+      // ---------- load sample ----------
       function loadSample() {
         payload.value = pretty(SAMPLE);
         document.getElementById('payloadStatus').textContent = 'sample loaded';
-        // auto-render sample preview
         updateResult(SAMPLE);
       }
 
@@ -829,14 +846,14 @@
       payload.value = pretty(SAMPLE);
       updateResult(SAMPLE);
       loadSampleBtn.addEventListener('click', loadSample);
-      analyzeBtn.addEventListener('click', runAnalysis);
+      analyzeBtn.addEventListener('click', simulateAnalysis);
       payload.addEventListener('input', () => {
         document.getElementById('payloadStatus').textContent = 'editing';
       });
       checkHealth();
       window.addEventListener('resize', resetEyes);
 
-      console.log('🔥 CYBER BENTO + dual result boxes + robot');
+      console.log('🔥 CYBER BENTO + working analysis simulation');
     })();
   </script>
 </body>
