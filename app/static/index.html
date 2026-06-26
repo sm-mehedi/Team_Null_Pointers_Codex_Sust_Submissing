@@ -216,11 +216,6 @@
         margin-bottom: 12px;
         flex-wrap: wrap;
       }
-      .toolbar-left {
-        display: flex;
-        gap: 10px;
-        margin-right: auto;
-      }
       button {
         min-height: 40px;
         border-radius: 0;
@@ -338,10 +333,7 @@
       <section>
         <div class="panel">
           <div class="toolbar">
-            <div class="toolbar-left">
-              <button class="secondary" id="loadSample">📂 Sample</button>
-              <button class="secondary" id="formatJsonBtn">🔁 Format as JSON</button>
-            </div>
+            <button class="secondary" id="loadSample">📂 Sample</button>
             <button id="analyze">⚡ Analyze</button>
           </div>
           <label for="payload">📨 Ticket JSON</label>
@@ -449,28 +441,6 @@
             result.textContent = String(error);
             resultStatus.textContent = "Invalid request";
             resultStatus.className = "status error";
-          }
-        });
-
-        // ---- NEW: Format as JSON button (no logic change, only text conversion) ----
-        document.getElementById("formatJsonBtn").addEventListener("click", function() {
-          const raw = payload.value.trim();
-          if (!raw) {
-            // if empty, do nothing or set a friendly message? we keep it silent (no logic change)
-            return;
-          }
-          try {
-            // try to parse as JSON; if it succeeds, re-stringify with pretty formatting
-            const parsed = JSON.parse(raw);
-            payload.value = pretty(parsed);
-          } catch (_) {
-            // if it's not valid JSON, we attempt to "convert" it: we wrap it as a string
-            // or we can try to interpret as a plain string. we'll put it into a simple object.
-            // but we don't want to change logic, just provide a best-effort format.
-            // we'll wrap it as a JSON object with a "text" field to keep it valid.
-            // this does not affect any other logic.
-            const wrapped = { text: raw };
-            payload.value = pretty(wrapped);
           }
         });
 
