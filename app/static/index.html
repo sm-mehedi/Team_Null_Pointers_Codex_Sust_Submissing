@@ -6,103 +6,45 @@
     <title>QueueStorm Investigator</title>
     <style>
       :root {
-        --bg: #0b1020;
-        --panel: rgba(18, 28, 48, 0.92);
-        --panel-2: rgba(12, 20, 36, 0.92);
-        --line: rgba(85, 222, 205, 0.24);
-        --text: #d8ecf3;
-        --muted: #8fb0bf;
-        --accent: #17d9c1;
-        --danger: #ff5d7a;
+        color-scheme: light;
+        --ink: #17202a;
+        --muted: #586574;
+        --line: #d9e1ea;
+        --surface: #ffffff;
+        --panel: #f6f8fb;
+        --accent: #0f766e;
+        --accent-2: #be123c;
       }
       * { box-sizing: border-box; }
       body {
         margin: 0;
-        min-height: 100vh;
-        padding: 22px;
-        color: var(--text);
-        background:
-          radial-gradient(circle at 12% 10%, rgba(23, 217, 193, 0.14), transparent 30%),
-          radial-gradient(circle at 90% 20%, rgba(98, 83, 255, 0.16), transparent 28%),
-          var(--bg);
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-      .shell {
-        display: grid;
-        grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr);
-        gap: 18px;
-        max-width: 1400px;
-        margin: 0 auto;
-      }
-      header, .card {
-        border: 1px solid var(--line);
-        border-radius: 16px;
+        color: var(--ink);
         background: var(--panel);
-        box-shadow: 0 18px 70px rgba(0, 0, 0, 0.24);
       }
       header {
-        grid-column: 1 / -1;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        padding: 16px 20px;
+        padding: 18px clamp(16px, 4vw, 48px);
+        border-bottom: 1px solid var(--line);
+        background: var(--surface);
       }
-      h1 {
-        margin: 0;
-        font-size: clamp(24px, 3vw, 38px);
-        letter-spacing: 0;
+      h1 { margin: 0; font-size: clamp(22px, 3vw, 34px); letter-spacing: 0; }
+      main {
+        display: grid;
+        grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.05fr);
+        gap: 18px;
+        padding: 18px clamp(16px, 4vw, 48px) 36px;
       }
-      .health {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--muted);
-        font-weight: 700;
-      }
-      .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 999px;
-        background: var(--accent);
-        box-shadow: 0 0 16px var(--accent);
-      }
-      .dot.off { background: var(--danger); box-shadow: 0 0 16px var(--danger); }
-      .card {
+      section {
         min-width: 0;
-        padding: 16px;
-      }
-      .toolbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        margin-bottom: 12px;
       }
       label {
-        color: var(--muted);
-        font-size: 13px;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-      .buttons {
-        display: flex;
-        gap: 8px;
-      }
-      button {
-        min-height: 38px;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 0 14px;
-        color: var(--text);
-        background: rgba(255, 255, 255, 0.06);
-        font-weight: 800;
-        cursor: pointer;
-      }
-      button.primary {
-        color: #04221e;
-        background: var(--accent);
+        display: block;
+        margin: 0 0 8px;
+        font-weight: 700;
       }
       textarea, pre {
         width: 100%;
@@ -110,87 +52,70 @@
         margin: 0;
         padding: 14px;
         border: 1px solid var(--line);
-        border-radius: 12px;
-        color: var(--text);
-        background: var(--panel-2);
-        font: 13px/1.55 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--ink);
+        font: 14px/1.5 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
         overflow: auto;
-        resize: vertical;
       }
-      .summary {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
         gap: 10px;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
       }
-      .summary div {
-        min-height: 58px;
-        padding: 10px;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.04);
+      button {
+        min-height: 38px;
+        border: 0;
+        border-radius: 8px;
+        padding: 0 14px;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
       }
-      .summary span {
-        display: block;
-        color: var(--muted);
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-      }
-      .summary strong {
-        display: block;
-        margin-top: 6px;
-        word-break: break-word;
+      button.secondary {
+        background: #344054;
       }
       .status {
         color: var(--muted);
-        font-size: 13px;
+        font-size: 14px;
+      }
+      .error {
+        color: var(--accent-2);
         font-weight: 700;
       }
-      .error { color: var(--danger); }
       @media (max-width: 900px) {
-        body { padding: 12px; }
-        .shell { grid-template-columns: 1fr; }
-        textarea, pre { min-height: 340px; }
-        .summary { grid-template-columns: 1fr; }
+        main { grid-template-columns: 1fr; }
+        textarea, pre { min-height: 360px; }
       }
     </style>
   </head>
   <body>
-    <main class="shell">
-      <header>
-        <h1>QueueStorm Investigator</h1>
-        <div class="health">
-          <span class="dot" id="healthDot"></span>
-          <span id="healthText">checking</span>
-        </div>
-      </header>
-
-      <section class="card">
+    <header>
+      <h1>QueueStorm Investigator</h1>
+      <span class="status" id="health">Checking API...</span>
+    </header>
+    <main>
+      <section>
         <div class="toolbar">
-          <label for="payload">Ticket JSON</label>
-          <div class="buttons">
-            <button id="loadSample">Sample</button>
-            <button class="primary" id="analyze">Analyze</button>
-          </div>
+          <button class="secondary" id="loadSample">Load Sample</button>
+          <button id="analyze">Analyze</button>
         </div>
+        <label for="payload">Ticket JSON</label>
         <textarea id="payload" spellcheck="false"></textarea>
-        <p class="status" id="payloadStatus">ready</p>
       </section>
-
-      <section class="card">
+      <section>
         <div class="toolbar">
-          <label for="result">Expected / Actual Output</label>
-          <span class="status" id="resultStatus">awaiting analysis</span>
+          <span class="status" id="resultStatus">Ready</span>
         </div>
-        <div class="summary" id="summary"></div>
+        <label for="result">Analysis Result</label>
         <pre id="result">{}</pre>
       </section>
     </main>
-
     <script>
-      const sampleTicket = {
+      const sample = {
         ticket_id: "TKT-DEMO-001",
         complaint: "I sent 5000 taka to the wrong number around 2pm today. Please help.",
         language: "en",
@@ -211,52 +136,30 @@
 
       const payload = document.getElementById("payload");
       const result = document.getElementById("result");
-      const summary = document.getElementById("summary");
       const resultStatus = document.getElementById("resultStatus");
-      const payloadStatus = document.getElementById("payloadStatus");
-      const healthText = document.getElementById("healthText");
-      const healthDot = document.getElementById("healthDot");
+      const health = document.getElementById("health");
 
       function pretty(value) {
         return JSON.stringify(value, null, 2);
-      }
-
-      function renderSummary(data) {
-        const fields = [
-          ["Ticket", data.ticket_id],
-          ["Transaction", data.relevant_transaction_id || "null"],
-          ["Verdict", data.evidence_verdict],
-          ["Case Type", data.case_type],
-          ["Severity", data.severity],
-          ["Department", data.department],
-          ["Human Review", String(data.human_review_required)],
-          ["Confidence", data.confidence == null ? "null" : `${Math.round(data.confidence * 100)}%`]
-        ];
-        summary.innerHTML = fields.map(([label, value]) => `
-          <div><span>${label}</span><strong>${value || "-"}</strong></div>
-        `).join("");
       }
 
       async function checkHealth() {
         try {
           const response = await fetch("/health");
           const data = await response.json();
-          const ok = response.ok && data.status === "ok";
-          healthText.textContent = ok ? "online" : "offline";
-          healthDot.className = ok ? "dot" : "dot off";
+          health.textContent = data.status === "ok" ? "API online" : "API unavailable";
         } catch {
-          healthText.textContent = "offline";
-          healthDot.className = "dot off";
+          health.textContent = "API unavailable";
+          health.className = "status error";
         }
       }
 
       document.getElementById("loadSample").addEventListener("click", () => {
-        payload.value = pretty(sampleTicket);
-        payloadStatus.textContent = "sample loaded";
+        payload.value = pretty(sample);
       });
 
       document.getElementById("analyze").addEventListener("click", async () => {
-        resultStatus.textContent = "analyzing";
+        resultStatus.textContent = "Analyzing...";
         resultStatus.className = "status";
         try {
           const body = JSON.parse(payload.value);
@@ -267,24 +170,16 @@
           });
           const data = await response.json();
           result.textContent = pretty(data);
-          if (response.ok) {
-            renderSummary(data);
-            resultStatus.textContent = "complete";
-            payloadStatus.textContent = "sent to backend";
-          } else {
-            summary.innerHTML = "";
-            resultStatus.textContent = `HTTP ${response.status}`;
-            resultStatus.className = "status error";
-          }
+          resultStatus.textContent = response.ok ? "Complete" : `HTTP ${response.status}`;
+          resultStatus.className = response.ok ? "status" : "status error";
         } catch (error) {
           result.textContent = String(error);
-          summary.innerHTML = "";
-          resultStatus.textContent = "invalid JSON or request failed";
+          resultStatus.textContent = "Invalid request";
           resultStatus.className = "status error";
         }
       });
 
-      payload.value = pretty(sampleTicket);
+      payload.value = pretty(sample);
       checkHealth();
     </script>
   </body>
