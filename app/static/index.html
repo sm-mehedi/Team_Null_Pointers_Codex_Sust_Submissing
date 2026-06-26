@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bento · QueueStorm</title>
-  <!-- Inter font -->
+  <title>CYBER · QueueStorm</title>
+  <!-- Inter font & Orbitron for cyber feel -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700;14..32,800&family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -15,17 +15,115 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --bg: #0b0f1a;
+      --card-bg: rgba(16, 24, 40, 0.7);
+      --card-border: rgba(0, 255, 200, 0.25);
+      --text: #d0e6f5;
+      --text-muted: #7fa3b8;
+      --accent: #00f0d0;
+      --accent-glow: #00f0d080;
+      --shadow: 0 0 30px rgba(0, 240, 208, 0.1);
+      --btn-bg: rgba(0, 240, 208, 0.12);
+      --btn-hover: rgba(0, 240, 208, 0.25);
+      --input-bg: rgba(0, 20, 30, 0.7);
+      --code-bg: #09141e;
+      --transition: 0.25s ease;
+    }
+
+    body.light-mode {
+      --bg: #eef2f8;
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --card-border: rgba(0, 120, 200, 0.2);
+      --text: #0b1e2b;
+      --text-muted: #2b5068;
+      --accent: #0a7b8c;
+      --accent-glow: #0a7b8c60;
+      --shadow: 0 8px 32px rgba(0,20,40,0.08);
+      --btn-bg: rgba(10, 123, 140, 0.10);
+      --btn-hover: rgba(10, 123, 140, 0.20);
+      --input-bg: #ffffffcc;
+      --code-bg: #f4f8fe;
+    }
+
     body {
-      background: #f4f6fa;
+      background: var(--bg);
       font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
       padding: 24px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      color: #0b1a2b;
+      color: var(--text);
+      transition: background var(--transition), color var(--transition);
+      position: relative;
+      overflow-x: hidden;
     }
 
-    /* ----- BENTO LAYOUT ----- */
+    /* ----- CYBER BG ANIMATION (grid + glow) ----- */
+    .cyber-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .cyber-bg .grid-line {
+      position: absolute;
+      background: rgba(0, 255, 200, 0.04);
+    }
+    .cyber-bg .h-line {
+      width: 100%;
+      height: 1px;
+      top: 20%;
+      left: 0;
+      animation: driftH 22s linear infinite;
+    }
+    .cyber-bg .v-line {
+      width: 1px;
+      height: 100%;
+      left: 30%;
+      top: 0;
+      animation: driftV 18s linear infinite;
+    }
+    .cyber-bg .v-line:nth-child(2) { left: 70%; animation-duration: 24s; }
+    .cyber-bg .v-line:nth-child(3) { left: 50%; animation-duration: 30s; opacity: 0.5; }
+
+    .cyber-bg .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      background: #00f0d0;
+      width: 400px;
+      height: 400px;
+      top: 10%;
+      left: -5%;
+      animation: floatOrb 28s alternate ease-in-out infinite;
+    }
+    .cyber-bg .glow-orb:nth-child(5) {
+      background: #7a4aff;
+      width: 300px;
+      height: 300px;
+      bottom: 10%;
+      right: 0%;
+      animation-duration: 32s;
+      animation-delay: -6s;
+      opacity: 0.08;
+    }
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(80px, 60px) scale(1.3); }
+    }
+    @keyframes driftH {
+      0% { transform: translateX(-10%); }
+      100% { transform: translateX(10%); }
+    }
+    @keyframes driftV {
+      0% { transform: translateY(-10%); }
+      100% { transform: translateY(10%); }
+    }
+
+    /* ----- BENTO GRID ----- */
     .bento-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -34,90 +132,142 @@
       margin: 0 auto;
       width: 100%;
       flex: 1;
+      position: relative;
+      z-index: 2;
     }
 
-    /* cards */
     .bento-card {
-      background: #ffffff;
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border-radius: 32px;
       padding: 24px 24px 28px;
-      box-shadow: 0 12px 28px -8px rgba(0,20,40,0.08), 0 4px 12px rgba(0,0,0,0.02);
-      transition: box-shadow 0.2s ease;
-      backdrop-filter: blur(2px);
-      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--card-border);
+      transition: background var(--transition), border var(--transition), box-shadow var(--transition);
       display: flex;
       flex-direction: column;
     }
 
-    .bento-card:hover {
-      box-shadow: 0 20px 36px -12px rgba(0,20,40,0.12);
-    }
-
-    /* header card */
     .header-card {
       grid-column: 1 / -1;
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
       padding: 16px 28px;
-      background: #ffffffdd;
-      backdrop-filter: blur(4px);
-      border-bottom: 1px solid #eef2f6;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .header-card h1 {
+      font-family: 'Orbitron', monospace;
       font-weight: 700;
       font-size: 1.9rem;
-      letter-spacing: -0.02em;
-      background: linear-gradient(145deg, #0a1e2e, #1f3a4b);
+      letter-spacing: 0.02em;
+      background: linear-gradient(135deg, #00f0d0, #7a4aff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
     }
-
     .header-card h1 small {
-      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
       font-weight: 400;
-      background: #eef2f6;
-      -webkit-text-fill-color: #1e3a4d;
+      font-size: 0.85rem;
+      background: rgba(0, 240, 208, 0.15);
+      -webkit-text-fill-color: var(--text-muted);
       padding: 4px 14px;
       border-radius: 40px;
-      letter-spacing: 0.01em;
+      border: 1px solid var(--card-border);
+      letter-spacing: 0.04em;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
     }
 
     .health-badge {
-      background: #e9ecf0;
-      padding: 8px 18px;
+      background: rgba(0, 20, 30, 0.5);
+      backdrop-filter: blur(4px);
+      padding: 6px 18px 6px 14px;
       border-radius: 60px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      color: #1f3a4b;
+      color: var(--text);
       display: flex;
       align-items: center;
       gap: 8px;
+      border: 1px solid var(--card-border);
     }
-
     .health-badge .dot {
       width: 10px;
       height: 10px;
       border-radius: 10px;
-      background: #2b8c6e;
+      background: #00f0d0;
       display: inline-block;
+      box-shadow: 0 0 12px #00f0d080;
     }
-
     .health-badge .dot.off {
-      background: #b13e4b;
+      background: #ff4d6d;
+      box-shadow: 0 0 12px #ff4d6d80;
     }
 
-    /* right card (result) */
-    .result-card {
-      grid-column: 2 / 3;
+    /* toggle switch */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,0,0,0.2);
+      padding: 4px 6px 4px 12px;
+      border-radius: 60px;
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: 0.2s;
+    }
+    .theme-toggle .toggle-track {
+      width: 34px;
+      height: 20px;
+      background: #2a4050;
+      border-radius: 40px;
+      position: relative;
+      transition: 0.25s;
+      margin-left: 4px;
+    }
+    .theme-toggle .toggle-track .thumb {
+      width: 16px;
+      height: 16px;
+      background: #00f0d0;
+      border-radius: 40px;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: 0.25s;
+      box-shadow: 0 0 12px #00f0d060;
+    }
+    body.light-mode .theme-toggle .toggle-track .thumb {
+      left: 16px;
+      background: #0a7b8c;
+    }
+    body.light-mode .theme-toggle .toggle-track {
+      background: #b0c8d8;
     }
 
-    /* toolbar inside cards */
+    /* cards */
+    .result-card { grid-column: 2 / 3; }
+
     .card-toolbar {
       display: flex;
       align-items: center;
@@ -126,97 +276,77 @@
       flex-wrap: wrap;
       gap: 8px;
     }
-
     .card-toolbar label {
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
-      letter-spacing: 0.02em;
-      color: #3b5568;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-family: 'Orbitron', monospace;
     }
-
     .btn-group {
       display: flex;
       gap: 8px;
-      align-items: center;
       flex-wrap: wrap;
     }
-
     .btn {
-      background: #eef2f6;
-      border: none;
+      background: var(--btn-bg);
+      border: 1px solid var(--card-border);
       border-radius: 60px;
-      padding: 8px 18px;
+      padding: 6px 18px;
       font-weight: 600;
-      font-size: 0.85rem;
-      color: #1a3142;
+      font-size: 0.8rem;
+      color: var(--text);
       cursor: pointer;
       transition: 0.2s;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      backdrop-filter: blur(4px);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.02em;
     }
-
     .btn-primary {
-      background: #0f2d3f;
-      color: white;
-      box-shadow: 0 4px 8px -4px rgba(10,40,60,0.2);
+      background: rgba(0, 240, 208, 0.18);
+      border-color: #00f0d080;
+      color: #00f0d0;
+      box-shadow: 0 0 16px #00f0d020;
     }
-
     .btn-primary:hover {
-      background: #1a3f55;
+      background: rgba(0, 240, 208, 0.35);
       transform: scale(0.97);
     }
-
     .btn-secondary {
-      background: #e3e9f0;
+      background: rgba(255,255,255,0.05);
     }
-
     .btn-secondary:hover {
-      background: #d0d9e3;
+      background: rgba(255,255,255,0.12);
     }
 
-    .btn-accent {
-      background: #1d6f5c;
-      color: white;
-    }
-
-    .btn-accent:hover {
-      background: #14806a;
-    }
-
-    /* textarea & pre */
     .code-area {
       width: 100%;
       min-height: 320px;
-      border: 1px solid #e2e8f0;
-      border-radius: 24px;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
       padding: 18px 20px;
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-      font-size: 0.85rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
       line-height: 1.6;
-      background: #fafcff;
-      color: #0c1f2e;
+      background: var(--code-bg);
+      color: var(--text);
       resize: vertical;
       transition: 0.15s;
       flex: 1;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.3);
     }
-
     .code-area:focus {
-      outline: 2px solid #b9d0e0;
+      outline: 2px solid #00f0d060;
       outline-offset: 2px;
-      background: #ffffff;
     }
-
     pre.code-area {
-      background: #f4f8fe;
+      background: var(--code-bg);
       white-space: pre-wrap;
       word-break: break-word;
       margin: 0;
       overflow: auto;
       min-height: 280px;
-      border: 1px solid #e2e8f0;
     }
 
     .status-line {
@@ -224,18 +354,16 @@
       justify-content: flex-end;
       align-items: center;
       gap: 12px;
-      font-size: 0.8rem;
-      color: #4a6a80;
+      font-size: 0.75rem;
+      color: var(--text-muted);
       font-weight: 500;
       margin-top: 8px;
+      font-family: 'Orbitron', monospace;
+      letter-spacing: 0.04em;
     }
+    .error-tag { color: #ff4d6d; font-weight: 700; }
 
-    .error-tag {
-      color: #bf3c4b;
-      font-weight: 700;
-    }
-
-    /* ----- ROBOT (mini companion) ----- */
+    /* ----- ROBOT (cyber) ----- */
     .robot-wrapper {
       grid-column: 1 / -1;
       display: flex;
@@ -244,160 +372,155 @@
       margin-bottom: -6px;
       pointer-events: none;
     }
-
     .robot-container {
-      background: #dce5ef;
-      padding: 12px 24px 12px 28px;
+      background: rgba(0, 20, 30, 0.5);
+      backdrop-filter: blur(8px);
+      padding: 10px 28px 10px 24px;
       border-radius: 80px;
-      backdrop-filter: blur(4px);
-      background: #eef3f9cc;
-      border: 1px solid #ffffffaa;
-      box-shadow: 0 8px 18px -6px rgba(0,20,30,0.12);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 0 40px rgba(0, 240, 208, 0.06);
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       pointer-events: auto;
       transition: 0.2s;
     }
-
     .robot-container:hover {
-      background: #e5ecf5dd;
+      background: rgba(0, 30, 40, 0.6);
     }
-
     .robot-face {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       cursor: default;
     }
-
     .robot-eye {
-      width: 18px;
-      height: 18px;
-      background: #1d3140;
+      width: 20px;
+      height: 20px;
+      background: #0a1a28;
       border-radius: 40px;
       transition: 0.08s linear;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 0 2px #a6bbc9;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), 0 0 0 2px #00f0d080;
       position: relative;
-      transform: translate(0,0);
       will-change: transform;
     }
-
     .robot-eye::after {
       content: '';
       display: block;
       width: 8px;
       height: 8px;
-      background: white;
+      background: #00f0d0;
       border-radius: 20px;
       position: absolute;
-      top: 3px;
-      left: 3px;
-      opacity: 0.7;
+      top: 4px;
+      left: 4px;
+      opacity: 0.9;
+      box-shadow: 0 0 12px #00f0d0;
       transition: 0.1s;
     }
-
     .robot-mouth {
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       line-height: 1;
       margin-left: 4px;
       letter-spacing: -2px;
-      color: #1d3140;
+      color: #00f0d0;
+      text-shadow: 0 0 20px #00f0d060;
     }
-
     .robot-label {
+      font-family: 'Orbitron', monospace;
       font-weight: 600;
-      font-size: 0.8rem;
-      color: #1a3345;
-      background: #ffffffaa;
-      padding: 2px 12px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      background: rgba(0, 240, 208, 0.08);
+      padding: 4px 14px;
       border-radius: 30px;
-      letter-spacing: 0.02em;
+      border: 1px solid var(--card-border);
+      letter-spacing: 0.1em;
     }
 
-    /* responsive */
     @media (max-width: 780px) {
-      .bento-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-      .result-card {
-        grid-column: 1 / 2;
-      }
-      .header-card {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-      }
-      .robot-wrapper {
-        justify-content: center;
-      }
-      .code-area {
-        min-height: 240px;
-      }
+      .bento-grid { grid-template-columns: 1fr; gap: 16px; }
+      .result-card { grid-column: 1 / 2; }
+      .header-card { flex-direction: column; align-items: flex-start; }
+      .robot-wrapper { justify-content: center; }
+      .code-area { min-height: 200px; }
     }
-
     @media (max-width: 480px) {
       body { padding: 12px; }
       .bento-card { padding: 16px; }
-      .robot-container { padding: 8px 16px; flex-wrap: wrap; }
+      .header-card h1 { font-size: 1.4rem; }
     }
   </style>
 </head>
 <body>
+
+  <!-- CYBER BG ANIMATION -->
+  <div class="cyber-bg">
+    <div class="grid-line h-line"></div>
+    <div class="grid-line v-line"></div>
+    <div class="grid-line v-line"></div>
+    <div class="grid-line v-line"></div>
+    <div class="glow-orb"></div>
+    <div class="glow-orb"></div>
+  </div>
+
   <div class="bento-grid">
 
-    <!-- HEADER CARD -->
+    <!-- HEADER -->
     <div class="bento-card header-card">
       <h1>
         QueueStorm
         <small>investigator</small>
       </h1>
-      <div class="health-badge" id="healthBadge">
-        <span class="dot" id="healthDot"></span>
-        <span id="healthText">checking…</span>
+      <div class="header-controls">
+        <div class="health-badge" id="healthBadge">
+          <span class="dot" id="healthDot"></span>
+          <span id="healthText">online</span>
+        </div>
+        <!-- Dark/Normal toggle -->
+        <div class="theme-toggle" id="themeToggle" title="toggle cyber / light">
+          <span id="themeLabel">⚡</span>
+          <div class="toggle-track">
+            <div class="thumb" id="toggleThumb"></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- LEFT CARD: payload -->
+    <!-- LEFT: payload -->
     <div class="bento-card">
       <div class="card-toolbar">
-        <label for="payload">📋 Ticket JSON</label>
+        <label for="payload">📟 ticket</label>
         <div class="btn-group">
-          <button class="btn btn-secondary" id="loadSample">📄 sample</button>
-          <button class="btn btn-primary" id="analyze">⚡ analyze</button>
+          <button class="btn btn-secondary" id="loadSample">⏣ sample</button>
+          <button class="btn btn-primary" id="analyze">▶ analyze</button>
         </div>
       </div>
       <textarea class="code-area" id="payload" spellcheck="false"></textarea>
-      <div class="status-line">
-        <span id="payloadStatus">ready</span>
-      </div>
+      <div class="status-line"><span id="payloadStatus">ready</span></div>
     </div>
 
-    <!-- RIGHT CARD: result -->
+    <!-- RIGHT: result -->
     <div class="bento-card result-card">
       <div class="card-toolbar">
-        <label for="result">📊 Analysis</label>
+        <label for="result">◈ analysis</label>
         <div class="btn-group">
-          <span class="status-line" id="resultStatus" style="margin:0;">Ready</span>
+          <span class="status-line" id="resultStatus" style="margin:0;">await</span>
         </div>
       </div>
       <pre class="code-area" id="result">{}</pre>
-      <div class="status-line">
-        <span id="resultMeta">output</span>
-      </div>
+      <div class="status-line"><span id="resultMeta">output</span></div>
     </div>
 
-    <!-- MINI ROBOT (bento full-width) -->
+    <!-- ROBOT -->
     <div class="robot-wrapper">
       <div class="robot-container" id="robotContainer">
         <div class="robot-face">
           <span class="robot-eye" id="eyeLeft"></span>
           <span class="robot-eye" id="eyeRight"></span>
-          <span class="robot-mouth">⌣</span>
+          <span class="robot-mouth" id="robotMouth">⌣</span>
         </div>
-        <span class="robot-label">tracker</span>
-        <span style="font-size:0.75rem; color:#2a4c62;">✦ follow</span>
+        <span class="robot-label">✦ tracker</span>
       </div>
     </div>
 
@@ -405,7 +528,7 @@
 
   <script>
     (function() {
-      // ---------- DOM refs ----------
+      // DOM
       const payload = document.getElementById('payload');
       const result = document.getElementById('result');
       const resultStatus = document.getElementById('resultStatus');
@@ -413,14 +536,18 @@
       const healthDot = document.getElementById('healthDot');
       const loadSampleBtn = document.getElementById('loadSample');
       const analyzeBtn = document.getElementById('analyze');
+      const themeToggle = document.getElementById('themeToggle');
+      const themeLabel = document.getElementById('themeLabel');
+      const toggleThumb = document.getElementById('toggleThumb');
 
-      // Robot eyes
+      // robot
       const eyeLeft = document.getElementById('eyeLeft');
       const eyeRight = document.getElementById('eyeRight');
+      const robotMouth = document.getElementById('robotMouth');
       const robotContainer = document.getElementById('robotContainer');
 
-      // ---------- sample ticket ----------
-      const SAMPLE_TICKET = {
+      // ---------- sample ----------
+      const SAMPLE = {
         ticket_id: "TKT-DEMO-001",
         complaint: "I sent 5000 taka to the wrong number around 2pm today. Please help.",
         language: "en",
@@ -428,23 +555,30 @@
         user_type: "customer",
         campaign_context: "boishakh_bonanza_day_1",
         transaction_history: [
-          {
-            transaction_id: "TXN-9101",
-            timestamp: "2026-04-14T14:08:22Z",
-            type: "transfer",
-            amount: 5000,
-            counterparty: "+8801719876543",
-            status: "completed"
-          }
+          { transaction_id: "TXN-9101", timestamp: "2026-04-14T14:08:22Z", type: "transfer", amount: 5000, counterparty: "+8801719876543", status: "completed" }
         ]
       };
 
-      // ---------- helpers ----------
-      function pretty(obj) {
-        return JSON.stringify(obj, null, 2);
-      }
+      function pretty(v) { return JSON.stringify(v, null, 2); }
 
-      // ---------- API health check ----------
+      // ---------- theme toggle ----------
+      function setTheme(mode) {
+        document.body.classList.toggle('light-mode', mode === 'light');
+        themeLabel.textContent = mode === 'light' ? '☀️' : '⚡';
+        localStorage.setItem('qs-theme', mode);
+      }
+      function getTheme() {
+        return localStorage.getItem('qs-theme') || 'dark';
+      }
+      // init theme
+      setTheme(getTheme());
+      themeToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isLight = document.body.classList.contains('light-mode');
+        setTheme(isLight ? 'dark' : 'light');
+      });
+
+      // ---------- health ----------
       async function checkHealth() {
         try {
           const resp = await fetch('/health');
@@ -453,123 +587,99 @@
             healthText.textContent = 'online';
             healthDot.className = 'dot';
           } else {
-            healthText.textContent = 'unstable';
+            healthText.textContent = 'degraded';
             healthDot.className = 'dot off';
           }
         } catch (_) {
-          healthText.textContent = 'unavailable';
+          healthText.textContent = 'offline';
           healthDot.className = 'dot off';
         }
       }
 
       // ---------- analyze ----------
       async function runAnalysis() {
-        resultStatus.textContent = 'analyzing…';
+        resultStatus.textContent = 'scanning…';
         resultStatus.className = 'status-line';
         try {
           const raw = payload.value.trim();
-          if (!raw) throw new Error('payload is empty');
+          if (!raw) throw new Error('empty payload');
           const body = JSON.parse(raw);
-
-          const response = await fetch('/analyze-ticket', {
+          const resp = await fetch('/analyze-ticket', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
           });
-
-          const data = await response.json();
+          const data = await resp.json();
           result.textContent = pretty(data);
-          resultStatus.textContent = response.ok ? '✓ complete' : `⚠ http ${response.status}`;
-          if (!response.ok) resultStatus.className = 'status-line error-tag';
-          else resultStatus.className = 'status-line';
+          resultStatus.textContent = resp.ok ? '✓ complete' : `⚠ http ${resp.status}`;
+          resultStatus.className = resp.ok ? 'status-line' : 'status-line error-tag';
         } catch (err) {
           result.textContent = String(err);
-          resultStatus.textContent = '✗ invalid request';
+          resultStatus.textContent = '✗ error';
           resultStatus.className = 'status-line error-tag';
         }
       }
 
-      // ---------- load sample ----------
       function loadSample() {
-        payload.value = pretty(SAMPLE_TICKET);
+        payload.value = pretty(SAMPLE);
         document.getElementById('payloadStatus').textContent = 'sample loaded';
       }
 
-      // ---------- ROBOT: follow mouse click ----------
+      // ---------- ROBOT: follow click ----------
       function moveEyes(clientX, clientY) {
         const rect = robotContainer.getBoundingClientRect();
-        // container center
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-
-        // distance from center (clamped)
+        const cx = rect.left + rect.width/2;
+        const cy = rect.top + rect.height/2;
         const dx = clientX - cx;
         const dy = clientY - cy;
-        const maxDist = 18; // max pixel shift
-        const angle = Math.atan2(dy, dx);
+        const maxDist = 22;
         const dist = Math.min(Math.hypot(dx, dy), maxDist);
-
+        const angle = Math.atan2(dy, dx);
         const shiftX = Math.cos(angle) * dist;
         const shiftY = Math.sin(angle) * dist;
-
-        // apply to both eyes (symmetric)
-        const transform = `translate(${shiftX}px, ${shiftY}px)`;
-        eyeLeft.style.transform = transform;
-        eyeRight.style.transform = transform;
+        const t = `translate(${shiftX}px, ${shiftY}px)`;
+        eyeLeft.style.transform = t;
+        eyeRight.style.transform = t;
       }
 
-      // reset eyes to center
       function resetEyes() {
         eyeLeft.style.transform = 'translate(0px, 0px)';
         eyeRight.style.transform = 'translate(0px, 0px)';
       }
 
-      // click listener on document: move robot eyes
+      // click → eyes follow + mouth blip
       document.addEventListener('click', (e) => {
         moveEyes(e.clientX, e.clientY);
-        // also change mouth to tiny 'o' for a moment? just for fun
-        const mouth = document.querySelector('.robot-mouth');
-        if (mouth) {
-          mouth.textContent = 'o';
-          setTimeout(() => { mouth.textContent = '⌣'; }, 300);
-        }
+        robotMouth.textContent = '◉';
+        setTimeout(() => { robotMouth.textContent = '⌣'; }, 250);
       });
 
-      // on mouse leave window reset eyes
       document.addEventListener('mouseleave', () => {
         resetEyes();
-        const mouth = document.querySelector('.robot-mouth');
-        if (mouth) mouth.textContent = '⌣';
+        robotMouth.textContent = '⌣';
       });
 
-      // also when mouse enters window, keep eyes at last known? we reset on leave
-
-      // ---------- init UI ----------
-      payload.value = pretty(SAMPLE_TICKET);
-      result.textContent = '{}';
-      resultStatus.textContent = 'ready';
-
-      // event listeners
-      loadSampleBtn.addEventListener('click', loadSample);
-      analyzeBtn.addEventListener('click', runAnalysis);
-
-      // health check
-      checkHealth();
-
-      // extra: if textarea changes, update status
-      payload.addEventListener('input', () => {
-        document.getElementById('payloadStatus').textContent = 'editing';
-      });
-
-      // small robot extra: click on robot resets eyes
       robotContainer.addEventListener('click', (e) => {
         e.stopPropagation();
         resetEyes();
-        const mouth = document.querySelector('.robot-mouth');
-        if (mouth) mouth.textContent = '⌣';
+        robotMouth.textContent = '⌣';
       });
 
-      console.log('🚀 Bento UI + robot tracker ready');
+      // ---------- init ----------
+      payload.value = pretty(SAMPLE);
+      result.textContent = '{}';
+      resultStatus.textContent = 'ready';
+      loadSampleBtn.addEventListener('click', loadSample);
+      analyzeBtn.addEventListener('click', runAnalysis);
+      payload.addEventListener('input', () => {
+        document.getElementById('payloadStatus').textContent = 'editing';
+      });
+      checkHealth();
+
+      // extra: if robot eyes get stuck, reset on window resize
+      window.addEventListener('resize', resetEyes);
+
+      console.log('🔥 CYBER BENTO + robot tracker active');
     })();
   </script>
 </body>
