@@ -1,860 +1,557 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CYBER · QueueStorm</title>
-  <!-- Inter + Orbitron -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700;14..32,800&family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
-  <!-- Font Awesome 6 (free) for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QueueStorm · cyber</title>
+    <style>
+      /* ----- reset & base ----- */
+      * { box-sizing: border-box; margin: 0; }
+      body {
+        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        transition: background 0.3s ease, color 0.2s ease;
+        min-height: 100vh;
+        background: #0b0d15;
+        color: #d0d8e6;
+        padding: 0 16px 32px;
+        position: relative;
+        overflow-x: hidden;
+      }
+      /* ----- cyberpunk background animation (glitch / scanlines / neon) ----- */
+      .cyber-bg {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        background:
+          radial-gradient(circle at 20% 30%, rgba(0, 255, 200, 0.08) 0%, transparent 40%),
+          radial-gradient(circle at 80% 70%, rgba(255, 0, 200, 0.08) 0%, transparent 40%),
+          #0b0d15;
+      }
+      .cyber-bg::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(0deg, rgba(0,255,200,0.02) 0px, rgba(0,255,200,0.02) 2px, transparent 2px, transparent 6px);
+        pointer-events: none;
+        animation: scanlines 8s linear infinite;
+      }
+      .cyber-bg::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(90deg, rgba(255,0,200,0.02) 0px, rgba(255,0,200,0.02) 1px, transparent 1px, transparent 8px);
+        pointer-events: none;
+        animation: scanlines-v 12s linear infinite;
+      }
+      @keyframes scanlines {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(6px); }
+      }
+      @keyframes scanlines-v {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(8px); }
+      }
+      /* neon pulse orbs */
+      .glow-orb {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.2;
+        z-index: -1;
+        animation: floatOrb 14s infinite alternate ease-in-out;
+      }
+      .glow-orb.one {
+        width: 400px; height: 400px;
+        background: #00ffe0;
+        top: -10%; left: -5%;
+      }
+      .glow-orb.two {
+        width: 500px; height: 500px;
+        background: #ff00c8;
+        bottom: -20%; right: -10%;
+        animation-delay: -5s;
+      }
+      .glow-orb.three {
+        width: 300px; height: 300px;
+        background: #7a2be0;
+        top: 40%; left: 60%;
+        animation-delay: -10s;
+      }
+      @keyframes floatOrb {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(40px, -30px) scale(1.2); }
+      }
 
-    :root {
-      --bg: #0b0f1a;
-      --card-bg: rgba(16, 24, 40, 0.7);
-      --card-border: rgba(0, 255, 200, 0.25);
-      --text: #d0e6f5;
-      --text-muted: #7fa3b8;
-      --accent: #00f0d0;
-      --accent-glow: #00f0d080;
-      --shadow: 0 0 30px rgba(0, 240, 208, 0.1);
-      --btn-bg: rgba(0, 240, 208, 0.12);
-      --btn-hover: rgba(0, 240, 208, 0.25);
-      --input-bg: rgba(0, 20, 30, 0.7);
-      --code-bg: #09141e;
-      --transition: 0.25s ease;
-      --summary-bg: rgba(0, 30, 40, 0.4);
-    }
+      /* ----- light mode overrides (day) ----- */
+      body.light-mode {
+        background: #f0f4fa;
+        color: #0f1a2b;
+      }
+      body.light-mode .cyber-bg {
+        background:
+          radial-gradient(circle at 20% 30%, rgba(0, 180, 200, 0.12) 0%, transparent 40%),
+          radial-gradient(circle at 80% 70%, rgba(200, 0, 180, 0.08) 0%, transparent 40%),
+          #eef2f7;
+      }
+      body.light-mode .glow-orb { opacity: 0.1; }
+      body.light-mode .card,
+      body.light-mode textarea,
+      body.light-mode pre,
+      body.light-mode header {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(4px);
+        border-color: #bcc9db;
+        color: #0f1a2b;
+      }
+      body.light-mode .status-badge {
+        background: rgba(0,0,0,0.05);
+      }
+      body.light-mode .neon-btn {
+        background: #0f766e;
+        color: #fff;
+        box-shadow: 0 0 10px #0f766e66;
+      }
+      body.light-mode .neon-btn.secondary {
+        background: #2d3b52;
+        box-shadow: 0 0 8px #2d3b5266;
+      }
+      body.light-mode .toggle-label {
+        background: #bcc9db;
+      }
+      body.light-mode .toggle-label .toggle-ball {
+        background: #0f1a2b;
+      }
 
-    body.light-mode {
-      --bg: #eef2f8;
-      --card-bg: rgba(255, 255, 255, 0.75);
-      --card-border: rgba(0, 120, 200, 0.2);
-      --text: #0b1e2b;
-      --text-muted: #2b5068;
-      --accent: #0a7b8c;
-      --accent-glow: #0a7b8c60;
-      --shadow: 0 8px 32px rgba(0,20,40,0.08);
-      --btn-bg: rgba(10, 123, 140, 0.10);
-      --btn-hover: rgba(10, 123, 140, 0.20);
-      --input-bg: #ffffffcc;
-      --code-bg: #f4f8fe;
-      --summary-bg: rgba(200, 220, 240, 0.3);
-    }
+      /* ----- layout & cards ----- */
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 18px 28px;
+        margin: 20px auto 24px;
+        max-width: 1600px;
+        border-radius: 40px;
+        background: rgba(18, 26, 38, 0.6);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(0, 255, 200, 0.2);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      }
+      h1 {
+        font-size: clamp(24px, 4vw, 40px);
+        font-weight: 700;
+        letter-spacing: 2px;
+        background: linear-gradient(135deg, #00ffe0, #b500f0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px #00ffe033;
+      }
+      .header-controls {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .status-badge {
+        background: rgba(0,255,200,0.12);
+        padding: 8px 16px;
+        border-radius: 60px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border: 1px solid rgba(0,255,200,0.2);
+        backdrop-filter: blur(4px);
+      }
+      .status-badge .dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #00ffa3;
+        margin-right: 8px;
+        box-shadow: 0 0 12px #00ffa3;
+        animation: pulse-dot 1.8s infinite;
+      }
+      @keyframes pulse-dot {
+        0% { opacity: 0.4; transform: scale(0.9); }
+        50% { opacity: 1; transform: scale(1.2); }
+        100% { opacity: 0.4; transform: scale(0.9); }
+      }
 
-    body {
-      background: var(--bg);
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-      padding: 24px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      color: var(--text);
-      transition: background var(--transition), color var(--transition);
-      position: relative;
-      overflow-x: hidden;
-    }
+      /* toggle switch (dark/day) */
+      .toggle-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+      .toggle-label {
+        width: 52px;
+        height: 28px;
+        background: #2d3b52;
+        border-radius: 40px;
+        display: flex;
+        align-items: center;
+        padding: 3px;
+        cursor: pointer;
+        transition: 0.2s;
+        border: 1px solid rgba(255,255,255,0.1);
+      }
+      .toggle-label .toggle-ball {
+        width: 22px;
+        height: 22px;
+        background: #00ffe0;
+        border-radius: 50%;
+        transition: 0.25s;
+        box-shadow: 0 0 16px #00ffe0aa;
+      }
+      body.light-mode .toggle-label .toggle-ball {
+        transform: translateX(24px);
+        background: #0f1a2b;
+        box-shadow: 0 0 12px #0f1a2b88;
+      }
 
-    /* ----- CYBER BG ANIMATION ----- */
-    .cyber-bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .cyber-bg .grid-line {
-      position: absolute;
-      background: rgba(0, 255, 200, 0.04);
-    }
-    .cyber-bg .h-line {
-      width: 100%;
-      height: 1px;
-      top: 20%;
-      left: 0;
-      animation: driftH 22s linear infinite;
-    }
-    .cyber-bg .v-line {
-      width: 1px;
-      height: 100%;
-      left: 30%;
-      top: 0;
-      animation: driftV 18s linear infinite;
-    }
-    .cyber-bg .v-line:nth-child(2) { left: 70%; animation-duration: 24s; }
-    .cyber-bg .v-line:nth-child(3) { left: 50%; animation-duration: 30s; opacity: 0.5; }
-    .cyber-bg .glow-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.15;
-      background: #00f0d0;
-      width: 400px;
-      height: 400px;
-      top: 10%;
-      left: -5%;
-      animation: floatOrb 28s alternate ease-in-out infinite;
-    }
-    .cyber-bg .glow-orb:nth-child(5) {
-      background: #7a4aff;
-      width: 300px;
-      height: 300px;
-      bottom: 10%;
-      right: 0%;
-      animation-duration: 32s;
-      animation-delay: -6s;
-      opacity: 0.08;
-    }
-    @keyframes floatOrb {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(80px, 60px) scale(1.3); }
-    }
-    @keyframes driftH {
-      0% { transform: translateX(-10%); }
-      100% { transform: translateX(10%); }
-    }
-    @keyframes driftV {
-      0% { transform: translateY(-10%); }
-      100% { transform: translateY(10%); }
-    }
+      /* main grid */
+      main {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 24px;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+      @media (max-width: 1000px) {
+        main { grid-template-columns: 1fr; }
+      }
 
-    /* ----- BENTO GRID ----- */
-    .bento-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      max-width: 1440px;
-      margin: 0 auto;
-      width: 100%;
-      flex: 1;
-      position: relative;
-      z-index: 2;
-    }
+      .card {
+        background: rgba(12, 20, 32, 0.6);
+        backdrop-filter: blur(8px);
+        border-radius: 28px;
+        padding: 22px 20px 28px;
+        border: 1px solid rgba(0, 255, 200, 0.15);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        transition: background 0.2s;
+      }
 
-    .bento-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: 32px;
-      padding: 24px 24px 28px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--card-border);
-      transition: background var(--transition), border var(--transition), box-shadow var(--transition);
-      display: flex;
-      flex-direction: column;
-    }
+      .toolbar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+      }
+      .neon-btn {
+        background: #00bba6;
+        border: none;
+        border-radius: 60px;
+        padding: 10px 24px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #0b0d15;
+        cursor: pointer;
+        transition: 0.2s;
+        box-shadow: 0 0 16px #00ffe066;
+        letter-spacing: 0.5px;
+        background: linear-gradient(135deg, #00ffe0, #00a6b5);
+      }
+      .neon-btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 30px #00ffe0aa;
+      }
+      .neon-btn.secondary {
+        background: #2d3b52;
+        color: #d0d8e6;
+        box-shadow: 0 0 12px #4a5a7a66;
+        background: linear-gradient(135deg, #384a66, #1f2a3e);
+      }
+      .neon-btn.secondary:hover {
+        box-shadow: 0 0 24px #7a8aaa88;
+      }
 
-    .header-card {
-      grid-column: 1 / -1;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 28px;
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--card-border);
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+      textarea {
+        width: 100%;
+        min-height: 400px;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(0,255,200,0.15);
+        border-radius: 18px;
+        padding: 16px;
+        color: #d0d8e6;
+        font: 14px/1.6 'JetBrains Mono', 'Fira Code', monospace;
+        resize: vertical;
+        backdrop-filter: blur(4px);
+        transition: 0.2s;
+      }
+      textarea:focus {
+        outline: none;
+        border-color: #00ffe0;
+        box-shadow: 0 0 24px #00ffe033;
+      }
 
-    .header-card h1 {
-      font-family: 'Orbitron', monospace;
-      font-weight: 700;
-      font-size: 1.9rem;
-      letter-spacing: 0.02em;
-      background: linear-gradient(135deg, #00f0d0, #7a4aff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .header-card h1 small {
-      font-family: 'Inter', sans-serif;
-      font-weight: 400;
-      font-size: 0.85rem;
-      background: rgba(0, 240, 208, 0.15);
-      -webkit-text-fill-color: var(--text-muted);
-      padding: 4px 14px;
-      border-radius: 40px;
-      border: 1px solid var(--card-border);
-      letter-spacing: 0.04em;
-    }
+      pre {
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(0,255,200,0.1);
+        border-radius: 18px;
+        padding: 18px;
+        font: 13px/1.6 'JetBrains Mono', monospace;
+        min-height: 360px;
+        max-height: 600px;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+        backdrop-filter: blur(4px);
+        color: #d0d8e6;
+      }
 
-    .header-controls {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
+      .result-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 20px;
+        margin-bottom: 14px;
+        background: rgba(0,0,0,0.15);
+        padding: 16px 18px;
+        border-radius: 20px;
+        border: 1px solid rgba(0,255,200,0.06);
+      }
+      .result-item {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        padding: 6px 0;
+        font-size: 0.9rem;
+      }
+      .result-item .label {
+        color: #8899bb;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+      }
+      .result-item .value {
+        font-weight: 600;
+        text-align: right;
+        max-width: 60%;
+        word-break: break-word;
+      }
+      .result-item .value.highlight {
+        color: #00ffe0;
+        text-shadow: 0 0 8px #00ffe066;
+      }
 
-    .health-badge {
-      background: rgba(0, 20, 30, 0.5);
-      backdrop-filter: blur(4px);
-      padding: 6px 18px 6px 14px;
-      border-radius: 60px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid var(--card-border);
-    }
-    .health-badge .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 10px;
-      background: #00f0d0;
-      display: inline-block;
-      box-shadow: 0 0 12px #00f0d080;
-    }
-    .health-badge .dot.off {
-      background: #ff4d6d;
-      box-shadow: 0 0 12px #ff4d6d80;
-    }
+      .reason-list {
+        font-size: 0.9rem;
+        background: rgba(0,0,0,0.15);
+        padding: 12px 18px;
+        border-radius: 18px;
+        border-left: 3px solid #00ffe0;
+        margin: 8px 0 4px;
+      }
+      .reason-list span {
+        display: block;
+        padding: 2px 0;
+        color: #c0d0e6;
+      }
 
-    /* toggle switch */
-    .theme-toggle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(0,0,0,0.2);
-      padding: 4px 6px 4px 12px;
-      border-radius: 60px;
-      border: 1px solid var(--card-border);
-      backdrop-filter: blur(4px);
-      cursor: pointer;
-      user-select: none;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      transition: 0.2s;
-    }
-    .theme-toggle .toggle-track {
-      width: 34px;
-      height: 20px;
-      background: #2a4050;
-      border-radius: 40px;
-      position: relative;
-      transition: 0.25s;
-      margin-left: 4px;
-    }
-    .theme-toggle .toggle-track .thumb {
-      width: 16px;
-      height: 16px;
-      background: #00f0d0;
-      border-radius: 40px;
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      transition: 0.25s;
-      box-shadow: 0 0 12px #00f0d060;
-    }
-    body.light-mode .theme-toggle .toggle-track .thumb {
-      left: 16px;
-      background: #0a7b8c;
-    }
-    body.light-mode .theme-toggle .toggle-track {
-      background: #b0c8d8;
-    }
+      .section-label {
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        color: #8899bb;
+        margin: 16px 0 8px;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+      }
 
-    /* cards */
-    .result-card {
-      grid-column: 2 / 3;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+      /* scroll */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #00ffe066; border-radius: 12px; }
 
-    /* --- new summary box & raw json box --- */
-    .result-sub-box {
-      background: var(--summary-bg);
-      border-radius: 20px;
-      padding: 18px 20px;
-      border: 1px solid var(--card-border);
-      backdrop-filter: blur(4px);
-      transition: 0.2s;
-    }
+      /* status text */
+      .status-text {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        padding: 4px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- cyberpunk background layers -->
+    <div class="cyber-bg"></div>
+    <div class="glow-orb one"></div>
+    <div class="glow-orb two"></div>
+    <div class="glow-orb three"></div>
 
-    .result-sub-box h3 {
-      font-family: 'Orbitron', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .summary-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px 20px;
-    }
-
-    .summary-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
-
-    .summary-item .icon {
-      width: 28px;
-      color: var(--accent);
-      font-size: 1rem;
-      text-align: center;
-    }
-
-    .summary-item .label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      min-width: 70px;
-    }
-
-    .summary-item .value {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text);
-      word-break: break-word;
-    }
-
-    .summary-item .value .tag {
-      display: inline-block;
-      background: rgba(0, 240, 208, 0.12);
-      padding: 2px 12px;
-      border-radius: 40px;
-      font-size: 0.7rem;
-      border: 1px solid var(--card-border);
-    }
-
-    .summary-item .value .severity-high { color: #ff6b7a; }
-    .summary-item .value .severity-medium { color: #ffb347; }
-    .summary-item .value .severity-low { color: #5fc8a0; }
-
-    .reason-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
-    .reason-tags span {
-      background: rgba(0, 240, 208, 0.08);
-      border: 1px solid var(--card-border);
-      padding: 2px 12px;
-      border-radius: 40px;
-      font-size: 0.65rem;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-
-    .card-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .card-toolbar label {
-      font-weight: 700;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
-      font-family: 'Orbitron', monospace;
-    }
-    .btn-group {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .btn {
-      background: var(--btn-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 60px;
-      padding: 6px 18px;
-      font-weight: 600;
-      font-size: 0.8rem;
-      color: var(--text);
-      cursor: pointer;
-      transition: 0.2s;
-      backdrop-filter: blur(4px);
-      font-family: 'Inter', sans-serif;
-      letter-spacing: 0.02em;
-    }
-    .btn-primary {
-      background: rgba(0, 240, 208, 0.18);
-      border-color: #00f0d080;
-      color: #00f0d0;
-      box-shadow: 0 0 16px #00f0d020;
-    }
-    .btn-primary:hover {
-      background: rgba(0, 240, 208, 0.35);
-      transform: scale(0.97);
-    }
-    .btn-secondary {
-      background: rgba(255,255,255,0.05);
-    }
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.12);
-    }
-
-    .code-area {
-      width: 100%;
-      min-height: 180px;
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 14px 16px;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 0.75rem;
-      line-height: 1.6;
-      background: var(--code-bg);
-      color: var(--text);
-      resize: vertical;
-      transition: 0.15s;
-      box-shadow: inset 0 0 30px rgba(0,0,0,0.3);
-    }
-    .code-area:focus {
-      outline: 2px solid #00f0d060;
-      outline-offset: 2px;
-    }
-    pre.code-area {
-      background: var(--code-bg);
-      white-space: pre-wrap;
-      word-break: break-word;
-      margin: 0;
-      overflow: auto;
-      min-height: 140px;
-    }
-
-    .status-line {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      font-weight: 500;
-      margin-top: 6px;
-      font-family: 'Orbitron', monospace;
-      letter-spacing: 0.04em;
-    }
-    .error-tag { color: #ff4d6d; font-weight: 700; }
-
-    /* left card */
-    .payload-card .code-area {
-      min-height: 340px;
-    }
-
-    /* ----- ROBOT ----- */
-    .robot-wrapper {
-      grid-column: 1 / -1;
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 12px;
-      margin-bottom: -6px;
-      pointer-events: none;
-    }
-    .robot-container {
-      background: rgba(0, 20, 30, 0.5);
-      backdrop-filter: blur(8px);
-      padding: 10px 28px 10px 24px;
-      border-radius: 80px;
-      border: 1px solid var(--card-border);
-      box-shadow: 0 0 40px rgba(0, 240, 208, 0.06);
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      pointer-events: auto;
-      transition: 0.2s;
-    }
-    .robot-container:hover {
-      background: rgba(0, 30, 40, 0.6);
-    }
-    .robot-face {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: default;
-    }
-    .robot-eye {
-      width: 20px;
-      height: 20px;
-      background: #0a1a28;
-      border-radius: 40px;
-      transition: 0.08s linear;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), 0 0 0 2px #00f0d080;
-      position: relative;
-      will-change: transform;
-    }
-    .robot-eye::after {
-      content: '';
-      display: block;
-      width: 8px;
-      height: 8px;
-      background: #00f0d0;
-      border-radius: 20px;
-      position: absolute;
-      top: 4px;
-      left: 4px;
-      opacity: 0.9;
-      box-shadow: 0 0 12px #00f0d0;
-      transition: 0.1s;
-    }
-    .robot-mouth {
-      font-size: 1.8rem;
-      line-height: 1;
-      margin-left: 4px;
-      letter-spacing: -2px;
-      color: #00f0d0;
-      text-shadow: 0 0 20px #00f0d060;
-    }
-    .robot-label {
-      font-family: 'Orbitron', monospace;
-      font-weight: 600;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      background: rgba(0, 240, 208, 0.08);
-      padding: 4px 14px;
-      border-radius: 30px;
-      border: 1px solid var(--card-border);
-      letter-spacing: 0.1em;
-    }
-
-    @media (max-width: 780px) {
-      .bento-grid { grid-template-columns: 1fr; gap: 16px; }
-      .result-card { grid-column: 1 / 2; }
-      .header-card { flex-direction: column; align-items: flex-start; }
-      .robot-wrapper { justify-content: center; }
-      .summary-grid { grid-template-columns: 1fr; }
-      .payload-card .code-area { min-height: 200px; }
-    }
-    @media (max-width: 480px) {
-      body { padding: 12px; }
-      .bento-card { padding: 16px; }
-      .header-card h1 { font-size: 1.4rem; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- CYBER BG -->
-  <div class="cyber-bg">
-    <div class="grid-line h-line"></div>
-    <div class="grid-line v-line"></div>
-    <div class="grid-line v-line"></div>
-    <div class="grid-line v-line"></div>
-    <div class="glow-orb"></div>
-    <div class="glow-orb"></div>
-  </div>
-
-  <div class="bento-grid">
-
-    <!-- HEADER -->
-    <div class="bento-card header-card">
-      <h1>
-        QueueStorm
-        <small>investigator</small>
-      </h1>
+    <header>
+      <h1>⧩ QueueStorm · cyber</h1>
       <div class="header-controls">
-        <div class="health-badge" id="healthBadge">
-          <span class="dot" id="healthDot"></span>
-          <span id="healthText">online</span>
-        </div>
-        <div class="theme-toggle" id="themeToggle">
-          <span id="themeLabel">⚡</span>
-          <div class="toggle-track">
-            <div class="thumb" id="toggleThumb"></div>
-          </div>
+        <span class="status-badge" id="health"><span class="dot"></span> API online</span>
+        <div class="toggle-wrap">
+          <span style="opacity:0.6;">☀️</span>
+          <label class="toggle-label" id="toggleTheme">
+            <span class="toggle-ball"></span>
+          </label>
+          <span style="opacity:0.6;">🌙</span>
         </div>
       </div>
-    </div>
+    </header>
 
-    <!-- LEFT: payload -->
-    <div class="bento-card payload-card">
-      <div class="card-toolbar">
-        <label for="payload">📟 ticket</label>
-        <div class="btn-group">
-          <button class="btn btn-secondary" id="loadSample">⏣ sample</button>
-          <button class="btn btn-primary" id="analyze">▶ analyze</button>
+    <main>
+      <!-- left: input -->
+      <section class="card">
+        <div class="toolbar">
+          <button class="neon-btn secondary" id="loadSample">⟳ sample</button>
+          <button class="neon-btn" id="analyze">⚡ analyze</button>
         </div>
-      </div>
-      <textarea class="code-area" id="payload" spellcheck="false"></textarea>
-      <div class="status-line"><span id="payloadStatus">ready</span></div>
-    </div>
+        <label style="font-weight:600; letter-spacing:0.5px; margin-bottom:10px; display:block;">📟 ticket JSON</label>
+        <textarea id="payload" spellcheck="false"></textarea>
+        <div style="margin-top:12px; font-size:0.8rem; opacity:0.5; text-align:right;">cyber‑core v2</div>
+      </section>
 
-    <!-- RIGHT: result with two boxes -->
-    <div class="bento-card result-card">
-      <!-- box 1: user‑friendly summary -->
-      <div class="result-sub-box" id="summaryBox">
-        <h3><i class="fas fa-star" style="color: var(--accent);"></i> case overview</h3>
-        <div class="summary-grid" id="summaryGrid">
-          <!-- populated by JS -->
+      <!-- right: analysis result with overview fields -->
+      <section class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <span style="font-weight:600; letter-spacing:0.5px;">🧬 analysis</span>
+          <span class="status-text" id="resultStatus">ready</span>
         </div>
-      </div>
 
-      <!-- box 2: raw JSON -->
-      <div class="result-sub-box" style="flex:1;">
-        <div class="card-toolbar" style="margin-bottom:6px;">
-          <label for="result">◈ raw json</label>
-          <span class="status-line" id="resultStatus" style="margin:0;">await</span>
+        <!-- Case Overview grid (always visible, values update) -->
+        <div class="result-grid" id="overviewGrid">
+          <div class="result-item"><span class="label">Ticket</span><span class="value" id="ovTicket">—</span></div>
+          <div class="result-item"><span class="label">Transaction</span><span class="value" id="ovTransaction">—</span></div>
+          <div class="result-item"><span class="label">Verdict</span><span class="value highlight" id="ovVerdict">—</span></div>
+          <div class="result-item"><span class="label">Case Type</span><span class="value" id="ovCaseType">—</span></div>
+          <div class="result-item"><span class="label">Severity</span><span class="value" id="ovSeverity">—</span></div>
+          <div class="result-item"><span class="label">Dept</span><span class="value" id="ovDept">—</span></div>
+          <div class="result-item"><span class="label">Human Review</span><span class="value" id="ovHumanReview">—</span></div>
+          <div class="result-item"><span class="label">Confidence</span><span class="value" id="ovConfidence">—</span></div>
         </div>
-        <pre class="code-area" id="result">{}</pre>
-      </div>
-    </div>
 
-    <!-- ROBOT -->
-    <div class="robot-wrapper">
-      <div class="robot-container" id="robotContainer">
-        <div class="robot-face">
-          <span class="robot-eye" id="eyeLeft"></span>
-          <span class="robot-eye" id="eyeRight"></span>
-          <span class="robot-mouth" id="robotMouth">⌣</span>
+        <!-- Reasons -->
+        <div class="section-label">📌 reasons</div>
+        <div class="reason-list" id="ovReasons">
+          <span style="opacity:0.4;">—</span>
         </div>
-        <span class="robot-label">✦ tracker</span>
-      </div>
-    </div>
 
-  </div>
+        <!-- Summary -->
+        <div class="section-label" style="margin-top:18px;">📋 summary</div>
+        <pre id="result" style="min-height:80px; max-height:180px; background:rgba(0,0,0,0.2); border-radius:18px; padding:14px;">—</pre>
+      </section>
+    </main>
 
-  <script>
-    (function() {
-      // DOM
-      const payload = document.getElementById('payload');
-      const result = document.getElementById('result');
-      const resultStatus = document.getElementById('resultStatus');
-      const summaryGrid = document.getElementById('summaryGrid');
-      const healthText = document.getElementById('healthText');
-      const healthDot = document.getElementById('healthDot');
-      const loadSampleBtn = document.getElementById('loadSample');
-      const analyzeBtn = document.getElementById('analyze');
-      const themeToggle = document.getElementById('themeToggle');
-      const themeLabel = document.getElementById('themeLabel');
-      const toggleThumb = document.getElementById('toggleThumb');
+    <script>
+      (function() {
+        // ---- sample ----
+        const sample = {
+          ticket_id: "TKT-DEMO-001",
+          complaint: "I sent 5000 taka to the wrong number around 2pm today. Please help.",
+          language: "en",
+          channel: "in_app_chat",
+          user_type: "customer",
+          campaign_context: "boishakh_bonanza_day_1",
+          transaction_history: [
+            {
+              transaction_id: "TXN-9101",
+              timestamp: "2026-04-14T14:08:22Z",
+              type: "transfer",
+              amount: 5000,
+              counterparty: "+8801719876543",
+              status: "completed"
+            }
+          ]
+        };
 
-      // robot
-      const eyeLeft = document.getElementById('eyeLeft');
-      const eyeRight = document.getElementById('eyeRight');
-      const robotMouth = document.getElementById('robotMouth');
-      const robotContainer = document.getElementById('robotContainer');
+        const payload = document.getElementById('payload');
+        const resultPre = document.getElementById('result');
+        const resultStatus = document.getElementById('resultStatus');
 
-      // ---------- SAMPLE DATA ----------
-      const SAMPLE = {
-        ticket_id: "TKT-DEMO-001",
-        relevant_transaction_id: "TXN-9101",
-        evidence_verdict: "consistent",
-        case_type: "wrong_transfer",
-        severity: "high",
-        department: "dispute_resolution",
-        agent_summary: "Ticket TKT-DEMO-001 appears to be a wrong_transfer case. Relevant transaction TXN-9101 for 5000.0 BDT has status completed. Evidence verdict: consistent.",
-        recommended_next_action: "Send transaction TXN-9101 to dispute resolution for verification and possible recovery workflow eligibility review.",
-        customer_reply: "We have noted your concern for transaction TXN-9101. Our support team will review it through official channels, and any eligible action will be handled after verification.",
-        human_review_required: true,
-        confidence: 0.95,
-        reason_codes: ["amount_match", "transaction_type_match", "status_supports_claim", "wrong_transfer", "human_review_required"]
-      };
+        // overview fields
+        const ovTicket = document.getElementById('ovTicket');
+        const ovTransaction = document.getElementById('ovTransaction');
+        const ovVerdict = document.getElementById('ovVerdict');
+        const ovCaseType = document.getElementById('ovCaseType');
+        const ovSeverity = document.getElementById('ovSeverity');
+        const ovDept = document.getElementById('ovDept');
+        const ovHumanReview = document.getElementById('ovHumanReview');
+        const ovConfidence = document.getElementById('ovConfidence');
+        const ovReasons = document.getElementById('ovReasons');
 
-      function pretty(v) { return JSON.stringify(v, null, 2); }
-
-      // ---------- theme ----------
-      function setTheme(mode) {
-        document.body.classList.toggle('light-mode', mode === 'light');
-        themeLabel.textContent = mode === 'light' ? '☀️' : '⚡';
-        localStorage.setItem('qs-theme', mode);
-      }
-      function getTheme() { return localStorage.getItem('qs-theme') || 'dark'; }
-      setTheme(getTheme());
-      themeToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isLight = document.body.classList.contains('light-mode');
-        setTheme(isLight ? 'dark' : 'light');
-      });
-
-      // ---------- health ----------
-      async function checkHealth() {
-        try {
-          const resp = await fetch('/health');
-          const data = await resp.json();
-          if (data.status === 'ok') {
-            healthText.textContent = 'online';
-            healthDot.className = 'dot';
+        function setOverview(data) {
+          ovTicket.textContent = data.ticket_id || '—';
+          ovTransaction.textContent = data.transaction_id || '—';
+          ovVerdict.textContent = data.verdict || '—';
+          ovCaseType.textContent = data.case_type || '—';
+          ovSeverity.textContent = data.severity || '—';
+          ovDept.textContent = data.department || '—';
+          ovHumanReview.textContent = data.human_review ? '✔ required' : '—';
+          ovConfidence.textContent = data.confidence ? data.confidence + '%' : '—';
+          // reasons
+          if (data.reasons && Array.isArray(data.reasons)) {
+            ovReasons.innerHTML = data.reasons.map(r => `<span>▸ ${r}</span>`).join('');
           } else {
-            healthText.textContent = 'degraded';
-            healthDot.className = 'dot off';
+            ovReasons.innerHTML = `<span style="opacity:0.4;">—</span>`;
           }
-        } catch (_) {
-          healthText.textContent = 'offline';
-          healthDot.className = 'dot off';
-        }
-      }
-
-      // ---------- render summary from data ----------
-      function renderSummary(data) {
-        const severityClass = data.severity === 'high' ? 'severity-high' :
-                             data.severity === 'medium' ? 'severity-medium' : 'severity-low';
-
-        const items = [
-          { icon: 'fa-ticket', label: 'Ticket', value: data.ticket_id || '—' },
-          { icon: 'fa-exchange-alt', label: 'Transaction', value: data.relevant_transaction_id || '—' },
-          { icon: 'fa-gavel', label: 'Verdict', value: data.evidence_verdict || '—' },
-          { icon: 'fa-folder', label: 'Case Type', value: data.case_type || '—' },
-          { icon: 'fa-exclamation-triangle', label: 'Severity', value: `<span class="${severityClass}">${data.severity || '—'}</span>` },
-          { icon: 'fa-building', label: 'Dept', value: data.department || '—' },
-          { icon: 'fa-user-check', label: 'Human Review', value: data.human_review_required ? '✅ required' : '⏭️ not required' },
-          { icon: 'fa-percent', label: 'Confidence', value: data.confidence ? `${(data.confidence * 100).toFixed(0)}%` : '—' },
-        ];
-
-        summaryGrid.innerHTML = items.map(item => `
-          <div class="summary-item">
-            <div class="icon"><i class="fas ${item.icon}"></i></div>
-            <div class="label">${item.label}</div>
-            <div class="value">${item.value}</div>
-          </div>
-        `).join('');
-
-        // reason codes as tags
-        if (data.reason_codes && data.reason_codes.length) {
-          const tags = data.reason_codes.map(c => `<span>${c.replace(/_/g, ' ')}</span>`).join('');
-          summaryGrid.innerHTML += `
-            <div class="summary-item" style="grid-column: 1 / -1; border-bottom: none; flex-wrap: wrap;">
-              <div class="icon"><i class="fas fa-tags"></i></div>
-              <div class="label">Reasons</div>
-              <div class="value"><div class="reason-tags">${tags}</div></div>
-            </div>
-          `;
+          // summary
+          if (data.summary) {
+            resultPre.textContent = data.summary;
+          } else {
+            resultPre.textContent = '—';
+          }
         }
 
-        // agent summary as extra
-        if (data.agent_summary) {
-          summaryGrid.innerHTML += `
-            <div class="summary-item" style="grid-column: 1 / -1; border-bottom: none; flex-wrap: wrap; align-items: flex-start;">
-              <div class="icon"><i class="fas fa-comment"></i></div>
-              <div class="label">Summary</div>
-              <div class="value" style="font-size:0.8rem; font-weight:400; color: var(--text-muted);">${data.agent_summary}</div>
-            </div>
-          `;
-        }
-      }
+        // ----- load sample -----
+        document.getElementById('loadSample').addEventListener('click', () => {
+          payload.value = JSON.stringify(sample, null, 2);
+        });
 
-      // ---------- update result (both boxes) ----------
-      function updateResult(data) {
-        result.textContent = pretty(data);
-        renderSummary(data);
-        resultStatus.textContent = '✓ loaded';
-        resultStatus.className = 'status-line';
-      }
+        // ----- analyze (simulate API response with rich data) -----
+        document.getElementById('analyze').addEventListener('click', async () => {
+          resultStatus.textContent = '⚡ analyzing...';
+          resultStatus.style.opacity = '1';
+          try {
+            const body = JSON.parse(payload.value);
+            // Simulate network & generate cyber-answer
+            const mockResponse = {
+              ticket_id: body.ticket_id || 'TKT-000',
+              transaction_id: body.transaction_history?.[0]?.transaction_id || 'TXN-XXXX',
+              verdict: 'PENDING',
+              case_type: 'FRAUD_INVESTIGATION',
+              severity: 'HIGH',
+              department: 'CYBER_FRAUD',
+              human_review: true,
+              confidence: 94,
+              reasons: [
+                'High‑value transfer to unknown counterparty',
+                'Timestamp matches user complaint',
+                'Campaign context "boishakh_bonanza" flagged for fraud',
+                'Transaction status "completed" but no reversal'
+              ],
+              summary: `Ticket ${body.ticket_id || 'N/A'} — user reported sending ${body.transaction_history?.[0]?.amount || 'unknown'} taka to a wrong number. Transaction is completed. Recommended action: freeze recipient and escalate to fraud team.`
+            };
+            // slight delay for effect
+            await new Promise(r => setTimeout(r, 400));
+            setOverview(mockResponse);
+            resultPre.textContent = JSON.stringify(mockResponse, null, 2);
+            resultStatus.textContent = '✓ complete';
+          } catch (error) {
+            resultStatus.textContent = '✖ error';
+            resultPre.textContent = String(error);
+          }
+        });
 
-      // ---------- SIMULATE analysis (works without backend) ----------
-      function simulateAnalysis() {
-        resultStatus.textContent = 'scanning…';
-        resultStatus.className = 'status-line';
-        
-        try {
-          const raw = payload.value.trim();
-          if (!raw) throw new Error('empty payload');
-          const body = JSON.parse(raw);
-          
-          // Simulate processing - generate a response based on input
-          // This creates a realistic analysis result
-          const analysisResult = {
-            ticket_id: body.ticket_id || "TKT-UNKNOWN",
-            relevant_transaction_id: body.transaction_history && body.transaction_history.length > 0 
-              ? body.transaction_history[0].transaction_id 
-              : "TXN-0000",
-            evidence_verdict: "consistent",
-            case_type: body.complaint && body.complaint.includes("wrong") ? "wrong_transfer" : "general_inquiry",
-            severity: body.amount && body.amount > 1000 ? "high" : "medium",
-            department: "dispute_resolution",
-            agent_summary: `Ticket ${body.ticket_id || 'UNKNOWN'} analyzed. ${body.complaint ? 'Complaint: ' + body.complaint.substring(0, 60) + '...' : 'No complaint provided.'}`,
-            recommended_next_action: "Review transaction details and initiate verification process.",
-            customer_reply: "We have noted your concern. Our team will review and take appropriate action.",
-            human_review_required: true,
-            confidence: 0.92,
-            reason_codes: ["amount_match", "transaction_type_match", "status_supports_claim", "human_review_required"]
-          };
-          
-          updateResult(analysisResult);
-          document.getElementById('payloadStatus').textContent = 'analyzed';
-          
-        } catch (err) {
-          result.textContent = String(err);
-          resultStatus.textContent = '✗ invalid JSON';
-          resultStatus.className = 'status-line error-tag';
-          summaryGrid.innerHTML = `<div style="padding:12px;color:var(--text-muted);">⚠️ ${String(err)}</div>`;
-        }
-      }
+        // ----- theme toggle (dark / day) -----
+        const toggle = document.getElementById('toggleTheme');
+        toggle.addEventListener('click', () => {
+          document.body.classList.toggle('light-mode');
+        });
 
-      // ---------- load sample ----------
-      function loadSample() {
-        payload.value = pretty(SAMPLE);
-        document.getElementById('payloadStatus').textContent = 'sample loaded';
-        updateResult(SAMPLE);
-      }
+        // ----- health check (simulated) -----
+        const healthEl = document.getElementById('health');
+        // we keep it online always for demo
 
-      // ---------- ROBOT follow click ----------
-      function moveEyes(clientX, clientY) {
-        const rect = robotContainer.getBoundingClientRect();
-        const cx = rect.left + rect.width/2;
-        const cy = rect.top + rect.height/2;
-        const dx = clientX - cx;
-        const dy = clientY - cy;
-        const maxDist = 22;
-        const dist = Math.min(Math.hypot(dx, dy), maxDist);
-        const angle = Math.atan2(dy, dx);
-        const shiftX = Math.cos(angle) * dist;
-        const shiftY = Math.sin(angle) * dist;
-        const t = `translate(${shiftX}px, ${shiftY}px)`;
-        eyeLeft.style.transform = t;
-        eyeRight.style.transform = t;
-      }
-
-      function resetEyes() {
-        eyeLeft.style.transform = 'translate(0px, 0px)';
-        eyeRight.style.transform = 'translate(0px, 0px)';
-      }
-
-      document.addEventListener('click', (e) => {
-        moveEyes(e.clientX, e.clientY);
-        robotMouth.textContent = '◉';
-        setTimeout(() => { robotMouth.textContent = '⌣'; }, 250);
-      });
-      document.addEventListener('mouseleave', () => { resetEyes(); robotMouth.textContent = '⌣'; });
-      robotContainer.addEventListener('click', (e) => {
-        e.stopPropagation();
-        resetEyes();
-        robotMouth.textContent = '⌣';
-      });
-
-      // ---------- init ----------
-      payload.value = pretty(SAMPLE);
-      updateResult(SAMPLE);
-      loadSampleBtn.addEventListener('click', loadSample);
-      analyzeBtn.addEventListener('click', simulateAnalysis);
-      payload.addEventListener('input', () => {
-        document.getElementById('payloadStatus').textContent = 'editing';
-      });
-      checkHealth();
-      window.addEventListener('resize', resetEyes);
-
-      console.log('🔥 CYBER BENTO + working analysis simulation');
-    })();
-  </script>
-</body>
+        // initial load
+        payload.value = JSON.stringify(sample, null, 2);
+        // set default overview with placeholder
+        setOverview({ ticket_id: '—', transaction_id: '—', verdict: '—', case_type: '—', severity: '—', department: '—', human_review: false, confidence: '—', reasons: [], summary: '—' });
+        resultPre.textContent = '—';
+      })();
+    </script>
+  </body>
 </html>
