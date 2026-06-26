@@ -1,1068 +1,473 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>QueueStorm Investigator</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+    <title>QueueStorm Investigator · retro</title>
     <style>
-        /* ── reset & base ── */
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-        }
-        body {
-            margin: 0;
-            font-family: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #f2f5f9;
-            color: #0b1a2b;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+      /* === RETRO THEME with smooth day/night toggle === */
+      * {
+        box-sizing: border-box;
+        transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      }
 
-        /* ── scrollbar ── */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #eef2f6;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #b8c5d4;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #9aabbf;
-        }
+      body {
+        margin: 0;
+        font-family: 'Courier New', Courier, 'IBM Plex Mono', 'Fira Code', monospace;
+        background: #f2efe6;
+        color: #2b2b2b;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-        /* ── header ── */
-        .app-header {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px 24px;
-            padding: 16px 32px;
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-        }
-        .app-header .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .app-header .brand-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            background: #0f2b4d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: 700;
-            font-size: 18px;
-            letter-spacing: -0.5px;
-        }
-        .app-header h1 {
-            margin: 0;
-            font-size: clamp(20px, 2.4vw, 30px);
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: #0b1a2b;
-        }
-        .app-header .subtitle {
-            font-size: 14px;
-            font-weight: 400;
-            color: #65758a;
-            margin-left: 2px;
-            display: none;
-        }
-        @media (min-width: 720px) {
-            .app-header .subtitle {
-                display: inline;
-            }
-        }
-        .app-header .header-right {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-shrink: 0;
-        }
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 6px 14px 6px 12px;
-            border-radius: 100px;
-            font-size: 13px;
-            font-weight: 600;
-            background: #eef2f6;
-            color: #4a5a6e;
-            transition: background 0.2s, color 0.2s;
-            border: 1px solid transparent;
-        }
-        .status-badge .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #b0bed0;
-            flex-shrink: 0;
-            transition: background 0.25s;
-        }
-        .status-badge.online {
-            background: #e6f7ed;
-            color: #0a6e4b;
-            border-color: #b6e4d0;
-        }
-        .status-badge.online .dot {
-            background: #0f9d6e;
-        }
-        .status-badge.offline {
-            background: #fde8e8;
-            color: #b91c1c;
-            border-color: #f5cdcd;
-        }
-        .status-badge.offline .dot {
-            background: #dc2626;
-        }
+      /* night mode (dark) */
+      body.night {
+        background: #1e1e1e;
+        color: #e0e0e0;
+      }
+      body.night header {
+        background: #2a2a2a;
+        border-bottom: 2px solid #4a4a4a;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+      }
+      body.night .panel {
+        background: #252525;
+        border: 2px solid #3d3d3d;
+        box-shadow: 4px 4px 0 #0f0f0f;
+      }
+      body.night textarea,
+      body.night pre {
+        background: #1a1a1a;
+        color: #d4d4d4;
+        border: 2px solid #3d3d3d;
+        box-shadow: inset 2px 2px 0 #0f0f0f;
+      }
+      body.night button {
+        background: #3a3a3a;
+        color: #f0f0f0;
+        border: 2px solid #5a5a5a;
+        box-shadow: 3px 3px 0 #0f0f0f;
+      }
+      body.night button.secondary {
+        background: #2d2d2d;
+        border-color: #4a4a4a;
+      }
+      body.night button:hover {
+        background: #4f4f4f;
+        transform: translate(-1px, -1px);
+        box-shadow: 4px 4px 0 #0f0f0f;
+      }
+      body.night .status { color: #b0b0b0; }
+      body.night .error { color: #f28b82; }
+      body.night footer {
+        border-top: 2px solid #3d3d3d;
+        background: #242424;
+      }
+      body.night .footer-link {
+        color: #b8b8b8;
+      }
+      body.night .footer-link:hover {
+        color: #ffffff;
+        text-shadow: 0 0 4px #aaaaaa;
+      }
+      body.night .mode-toggle {
+        background: #2d2d2d;
+        border: 2px solid #5a5a5a;
+        color: #e0e0e0;
+      }
 
-        /* ── main grid ── */
-        .app-main {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 24px;
-            padding: 24px 32px 40px;
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-        @media (max-width: 1024px) {
-            .app-main {
-                grid-template-columns: 1fr;
-                gap: 28px;
-                padding: 20px;
-            }
-        }
-        @media (max-width: 600px) {
-            .app-main {
-                padding: 14px;
-                gap: 20px;
-            }
-            .app-header {
-                padding: 12px 16px;
-            }
-        }
+      /* day mode - writings visible, retro paper feel */
+      body:not(.night) .panel {
+        background: #fcf9f0;
+        border: 2px solid #b8a88a;
+        box-shadow: 6px 6px 0 #b8a88a;
+      }
+      body:not(.night) textarea,
+      body:not(.night) pre {
+        background: #fffcf5;
+        color: #1e1e1e;
+        border: 2px solid #b8a88a;
+        box-shadow: inset 3px 3px 0 #d6cbbc;
+      }
+      body:not(.night) button {
+        background: #d9cdb0;
+        color: #1f1f1f;
+        border: 2px solid #8f7a5a;
+        box-shadow: 4px 4px 0 #8f7a5a;
+        font-weight: 700;
+      }
+      body:not(.night) button.secondary {
+        background: #c8b99a;
+        border-color: #7a684a;
+      }
+      body:not(.night) button:hover {
+        background: #e5d7b8;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 #8f7a5a;
+      }
+      body:not(.night) footer {
+        border-top: 2px solid #b8a88a;
+        background: #ede7d7;
+      }
+      body:not(.night) .footer-link {
+        color: #3d2e1b;
+      }
+      body:not(.night) .footer-link:hover {
+        color: #000000;
+        text-shadow: 0 0 2px #b8a88a;
+      }
+      body:not(.night) .mode-toggle {
+        background: #d9cdb0;
+        border: 2px solid #8f7a5a;
+        color: #1f1f1f;
+      }
 
-        /* ── panels ── */
-        .panel {
-            background: #ffffff;
-            border-radius: 14px;
-            border: 1px solid #e6edf4;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02);
-            overflow: hidden;
-            transition: box-shadow 0.2s;
-        }
-        .panel:hover {
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
-        }
-        .panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 16px 20px 12px 20px;
-            border-bottom: 1px solid #edf2f7;
-            flex-wrap: wrap;
-        }
-        .panel-header .panel-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1a2c3f;
-            letter-spacing: -0.01em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .panel-header .panel-title .icon {
-            font-size: 18px;
-            line-height: 1;
-        }
-        .panel-body {
-            padding: 16px 20px 20px;
-        }
-        .panel-body.no-pad {
-            padding: 0;
-        }
+      /* layout */
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px clamp(16px, 4vw, 48px);
+        border-bottom: 2px solid #b8a88a;
+        background: #f5efe2;
+        flex-wrap: wrap;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(22px, 3.5vw, 38px);
+        letter-spacing: -0.5px;
+        font-weight: 700;
+        text-shadow: 3px 3px 0 rgba(0,0,0,0.05);
+        font-family: 'Courier New', monospace;
+        text-transform: uppercase;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .mode-toggle {
+        background: #d9cdb0;
+        border: 2px solid #8f7a5a;
+        border-radius: 40px;
+        padding: 6px 18px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        font-family: 'Courier New', monospace;
+        box-shadow: 3px 3px 0 #8f7a5a;
+        transition: all 0.15s ease;
+        letter-spacing: 0.5px;
+      }
+      .mode-toggle:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 4px 4px 0 #6b5b40;
+      }
 
-        /* ── toolbar ── */
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
-        }
-        .toolbar .spacer {
-            flex: 1;
-        }
+      main {
+        display: grid;
+        grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.05fr);
+        gap: 24px;
+        padding: 24px clamp(16px, 4vw, 48px) 20px;
+        flex: 1;
+      }
+      section {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      label {
+        display: block;
+        margin: 0 0 6px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+      textarea, pre {
+        width: 100%;
+        min-height: 480px;
+        margin: 0;
+        padding: 16px;
+        border-radius: 0;
+        font: 14px/1.6 'Courier New', 'Fira Code', monospace;
+        overflow: auto;
+        resize: vertical;
+        transition: all 0.2s;
+      }
+      .panel {
+        padding: 14px 12px 12px;
+        border-radius: 0;
+        background: #fcf9f0;
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      button {
+        min-height: 40px;
+        border-radius: 0;
+        padding: 0 18px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Courier New', monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.15s ease;
+        background: #d9cdb0;
+        border: 2px solid #8f7a5a;
+        box-shadow: 4px 4px 0 #8f7a5a;
+      }
+      button:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0 #8f7a5a;
+      }
+      .status {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+      .error {
+        color: #b33c2e;
+        font-weight: 700;
+      }
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        flex: 1;
+        min-height: 300px;
+      }
+      #resultStatus {
+        margin-right: auto;
+      }
 
-        /* ── buttons ── */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            min-height: 38px;
-            padding: 0 18px;
-            border: 0;
-            border-radius: 8px;
-            font-family: "Inter", system-ui, sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
-            text-decoration: none;
-            white-space: nowrap;
-            background: #eef2f6;
-            color: #1a2c3f;
-        }
-        .btn:active {
-            transform: scale(0.97);
-        }
-        .btn-primary {
-            background: #0f2b4d;
-            color: #fff;
-            box-shadow: 0 1px 2px rgba(15, 43, 77, 0.15);
-        }
-        .btn-primary:hover {
-            background: #1a3a62;
-            box-shadow: 0 2px 8px rgba(15, 43, 77, 0.18);
-        }
-        .btn-primary:focus-visible {
-            outline: 2px solid #0f2b4d;
-            outline-offset: 2px;
-        }
-        .btn-secondary {
-            background: #f1f4f8;
-            color: #1a2c3f;
-            border: 1px solid #dce4ec;
-        }
-        .btn-secondary:hover {
-            background: #e6ebf2;
-            border-color: #c8d3df;
-        }
-        .btn-secondary:focus-visible {
-            outline: 2px solid #8fa6c0;
-            outline-offset: 2px;
-        }
-        .btn .badge-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: currentColor;
-            opacity: 0.6;
-        }
+      /* footer */
+      footer {
+        margin-top: 16px;
+        padding: 20px clamp(16px, 4vw, 48px);
+        border-top: 2px solid #b8a88a;
+        background: #ede7d7;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px 24px;
+        font-size: 0.95rem;
+      }
+      .footer-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .footer-left span {
+        font-weight: 600;
+        opacity: 0.8;
+      }
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px 20px;
+      }
+      .footer-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        border-bottom: 2px solid transparent;
+        transition: border-color 0.15s, color 0.15s;
+        color: #3d2e1b;
+      }
+      .footer-link:hover {
+        border-bottom-color: currentColor;
+      }
+      .footer-link svg {
+        width: 20px;
+        height: 20px;
+        fill: currentColor;
+        display: inline-block;
+      }
+      .footer-link .github-icon {
+        width: 22px;
+        height: 22px;
+      }
+      .footer-right {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
 
-        /* ── textarea / editor ── */
-        .json-editor {
-            width: 100%;
-            min-height: 460px;
-            padding: 16px 18px;
-            border: 0;
-            background: #fafcfe;
-            color: #0b1a2b;
-            font: 13px/1.6 "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-            resize: vertical;
-            outline: none;
-            border-radius: 0 0 14px 14px;
-            tab-size: 2;
-        }
-        .json-editor:focus {
-            background: #ffffff;
-            box-shadow: inset 0 0 0 1px #0f2b4d;
-        }
-        .json-editor::placeholder {
-            color: #a0b3c9;
-            font-family: "Inter", system-ui, sans-serif;
-            font-size: 13px;
-        }
-
-        /* ── dashboard cards grid ── */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        @media (max-width: 480px) {
-            .kpi-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        .kpi-card {
-            background: #f8fafd;
-            border-radius: 10px;
-            padding: 14px 16px 12px;
-            border: 1px solid #eef2f7;
-            transition: background 0.15s, border-color 0.15s;
-        }
-        .kpi-card:hover {
-            background: #f4f7fb;
-            border-color: #dce4ec;
-        }
-        .kpi-card .kpi-label {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #65758a;
-            margin-bottom: 4px;
-        }
-        .kpi-card .kpi-value {
-            font-size: 16px;
-            font-weight: 700;
-            color: #0b1a2b;
-            word-break: break-word;
-            line-height: 1.3;
-        }
-        .kpi-card .kpi-value .sub {
-            font-weight: 400;
-            font-size: 13px;
-            color: #65758a;
-            margin-left: 4px;
-        }
-        .kpi-card .kpi-value .badge {
-            display: inline-block;
-            padding: 2px 10px 2px 10px;
-            border-radius: 100px;
-            font-size: 12px;
-            font-weight: 600;
-            line-height: 1.5;
-            letter-spacing: 0.01em;
-        }
-        .badge-sev-critical {
-            background: #fde8e8;
-            color: #b91c1c;
-        }
-        .badge-sev-high {
-            background: #fef0e0;
-            color: #b45a1c;
-        }
-        .badge-sev-medium {
-            background: #fef9e0;
-            color: #9d7a0e;
-        }
-        .badge-sev-low {
-            background: #e6f7ed;
-            color: #0a6e4b;
-        }
-        .badge-sev-default {
-            background: #eef2f6;
-            color: #4a5a6e;
-        }
-        .badge-review-required {
-            background: #fde8e8;
-            color: #b91c1c;
-        }
-        .badge-review-not-required {
-            background: #e6f7ed;
-            color: #0a6e4b;
-        }
-        .badge-review-default {
-            background: #eef2f6;
-            color: #4a5a6e;
-        }
-
-        /* ── confidence bar ── */
-        .confidence-wrap {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 2px;
-        }
-        .confidence-track {
-            flex: 1;
-            height: 6px;
-            border-radius: 6px;
-            background: #e6edf4;
-            overflow: hidden;
-            min-width: 40px;
-        }
-        .confidence-fill {
-            height: 100%;
-            border-radius: 6px;
-            background: #0f2b4d;
-            transition: width 0.5s ease;
-            width: 0%;
-        }
-        .confidence-fill.high {
-            background: #0f9d6e;
-        }
-        .confidence-fill.medium {
-            background: #d4a017;
-        }
-        .confidence-fill.low {
-            background: #dc6b1f;
-        }
-        .confidence-fill.critical {
-            background: #b91c1c;
-        }
-        .confidence-text {
-            font-size: 15px;
-            font-weight: 700;
-            color: #0b1a2b;
-            min-width: 44px;
-            text-align: right;
-        }
-
-        /* ── evidence list ── */
-        .evidence-list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .evidence-list li {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px 8px 10px;
-            background: #f8fafd;
-            border-radius: 8px;
-            font-size: 14px;
-            color: #1a2c3f;
-            border-left: 3px solid #0f2b4d;
-        }
-        .evidence-list li .ev-icon {
-            font-size: 16px;
-            line-height: 1;
-            flex-shrink: 0;
-            color: #0f2b4d;
-        }
-        .evidence-list li .ev-text {
-            flex: 1;
-        }
-        .evidence-empty {
-            color: #8fa6c0;
-            font-size: 14px;
-            padding: 10px 0 4px;
-        }
-
-        /* ── action & reply cards ── */
-        .action-card {
-            background: #f4f8fe;
-            border-radius: 10px;
-            padding: 14px 18px;
-            border-left: 4px solid #0f2b4d;
-            margin-top: 4px;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #0b1a2b;
-        }
-        .action-card .action-label {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #65758a;
-            margin-bottom: 4px;
-        }
-        .reply-card {
-            background: #f8fafd;
-            border-radius: 10px;
-            padding: 14px 18px;
-            border: 1px solid #eef2f7;
-            margin-top: 4px;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #0b1a2b;
-        }
-        .reply-card .reply-label {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #65758a;
-            margin-bottom: 4px;
-        }
-
-        /* ── raw json toggle ── */
-        .raw-toggle {
-            margin-top: 20px;
-            border-top: 1px solid #edf2f7;
-            padding-top: 12px;
-        }
-        .raw-toggle summary {
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            color: #4a5a6e;
-            padding: 6px 0;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            user-select: none;
-            transition: color 0.15s;
-        }
-        .raw-toggle summary:hover {
-            color: #0b1a2b;
-        }
-        .raw-toggle summary::-webkit-details-marker {
-            color: #8fa6c0;
-        }
-        .raw-toggle .raw-content {
-            margin-top: 10px;
-            padding: 14px 16px;
-            background: #fafcfe;
-            border-radius: 10px;
-            border: 1px solid #edf2f7;
-            font: 12px/1.6 "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Consolas, monospace;
-            color: #1a2c3f;
-            overflow: auto;
-            max-height: 400px;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-
-        /* ── empty state ── */
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 48px 20px 40px;
-            color: #8fa6c0;
-            text-align: center;
-        }
-        .empty-state .empty-icon {
-            font-size: 42px;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
-        .empty-state .empty-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #4a5a6e;
-        }
-        .empty-state .empty-desc {
-            font-size: 14px;
-            color: #8fa6c0;
-            margin-top: 4px;
-        }
-
-        /* ── status message in panel ── */
-        .panel-status {
-            font-size: 13px;
-            font-weight: 500;
-            color: #65758a;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .panel-status .spinner {
-            width: 16px;
-            height: 16px;
-            border: 2px solid #dce4ec;
-            border-top-color: #0f2b4d;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        .panel-status.error {
-            color: #b91c1c;
-        }
-
-        /* ── utilities ── */
-        .mt-8 {
-            margin-top: 8px;
-        }
-        .mt-12 {
-            margin-top: 12px;
-        }
-        .mt-16 {
-            margin-top: 16px;
-        }
-        .gap-8 {
-            gap: 8px;
-        }
-        .flex {
-            display: flex;
-        }
-        .flex-wrap {
-            flex-wrap: wrap;
-        }
-        .items-center {
-            align-items: center;
-        }
-
-        /* ── responsive tweaks ── */
-        @media (max-width: 600px) {
-            .kpi-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
-            .kpi-card {
-                padding: 10px 12px 10px;
-            }
-            .kpi-card .kpi-value {
-                font-size: 14px;
-            }
-            .panel-body {
-                padding: 12px 14px 16px;
-            }
-            .panel-header {
-                padding: 12px 14px 10px;
-            }
-            .json-editor {
-                min-height: 280px;
-                padding: 12px 14px;
-                font-size: 12px;
-            }
-            .action-card,
-            .reply-card {
-                font-size: 13px;
-                padding: 12px 14px;
-            }
-            .evidence-list li {
-                font-size: 13px;
-                padding: 6px 10px 6px 8px;
-            }
-            .btn {
-                font-size: 13px;
-                padding: 0 14px;
-                min-height: 34px;
-            }
-            .app-header .brand-icon {
-                width: 32px;
-                height: 32px;
-                font-size: 15px;
-            }
-        }
-        @media (max-width: 400px) {
-            .kpi-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
-            }
-            .kpi-card .kpi-label {
-                font-size: 10px;
-            }
-            .kpi-card .kpi-value {
-                font-size: 13px;
-            }
-        }
-
-        /* ── print friendly ── */
-        @media print {
-            .btn,
-            .toolbar .btn {
-                display: none !important;
-            }
-            .app-header {
-                border-bottom: 1px solid #ccc;
-            }
-            .panel {
-                border: 1px solid #ccc;
-                box-shadow: none !important;
-                break-inside: avoid;
-            }
-            .json-editor {
-                border: 1px solid #ccc;
-                min-height: 200px;
-            }
-        }
-
-        /* ── a11y focus ── */
-        a:focus-visible,
-        button:focus-visible,
-        summary:focus-visible,
-        textarea:focus-visible {
-            outline: 2px solid #0f2b4d;
-            outline-offset: 2px;
-        }
-        summary:focus-visible {
-            border-radius: 4px;
-        }
+      @media (max-width: 900px) {
+        main { grid-template-columns: 1fr; }
+        textarea, pre { min-height: 280px; }
+        footer { flex-direction: column; align-items: flex-start; }
+        .footer-right { width: 100%; justify-content: flex-start; }
+      }
     </style>
-</head>
-<body>
-
-    <!-- ═══ HEADER ═══ -->
-    <header class="app-header" role="banner">
-        <div class="brand">
-            <div class="brand-icon" aria-hidden="true">QS</div>
-            <div>
-                <h1>QueueStorm Investigator</h1>
-                <span class="subtitle">AI Customer Support Investigation Platform</span>
-            </div>
-        </div>
-        <div class="header-right">
-            <span class="status-badge" id="healthBadge" role="status" aria-live="polite">
-                <span class="dot" aria-hidden="true"></span>
-                <span id="healthText">Checking API…</span>
-            </span>
-        </div>
+  </head>
+  <body>
+    <header>
+      <h1>🕵️ QueueStorm</h1>
+      <div class="header-actions">
+        <span class="status" id="health">Checking API...</span>
+        <button class="mode-toggle" id="modeToggle" aria-label="Toggle day/night">🌙 night</button>
+      </div>
     </header>
 
-    <!-- ═══ MAIN ═══ -->
-    <main class="app-main" role="main">
-
-        <!-- ─── LEFT: JSON EDITOR ─── -->
-        <section class="panel" aria-label="Ticket JSON editor">
-            <div class="panel-header">
-                <span class="panel-title"><span class="icon" aria-hidden="true">📄</span> Ticket JSON</span>
-                <div class="toolbar">
-                    <button class="btn btn-secondary" id="loadSample" type="button">Load Sample</button>
-                    <button class="btn btn-primary" id="analyze" type="button">Analyze Ticket</button>
-                </div>
-            </div>
-            <div class="panel-body no-pad">
-                <textarea class="json-editor" id="payload" spellcheck="false" aria-label="Ticket JSON payload" placeholder='Paste or edit a ticket JSON object, then click "Analyze Ticket".'></textarea>
-            </div>
-        </section>
-
-        <!-- ─── RIGHT: DASHBOARD ─── -->
-        <section class="panel" aria-label="Executive Investigation Dashboard">
-            <div class="panel-header">
-                <span class="panel-title"><span class="icon" aria-hidden="true">📊</span> Executive Investigation Dashboard</span>
-                <span class="panel-status" id="resultStatus">Ready</span>
-            </div>
-            <div class="panel-body" id="dashboardBody">
-
-                <!-- KPI cards will be rendered here -->
-                <div id="kpiContainer"></div>
-
-                <!-- Evidence -->
-                <div id="evidenceContainer">
-                    <div class="evidence-empty">No analysis data yet. Load a ticket and click <strong>Analyze Ticket</strong>.</div>
-                </div>
-
-                <!-- Recommended Action -->
-                <div id="actionContainer" class="mt-16"></div>
-
-                <!-- Customer Reply -->
-                <div id="replyContainer" class="mt-12"></div>
-
-                <!-- Raw JSON (collapsed) -->
-                <div class="raw-toggle">
-                    <details id="rawDetails">
-                        <summary>📋 Raw JSON Response</summary>
-                        <div class="raw-content" id="rawContent">{}</div>
-                    </details>
-                </div>
-
-            </div>
-        </section>
-
+    <main>
+      <section>
+        <div class="panel">
+          <div class="toolbar">
+            <button class="secondary" id="loadSample">📂 Sample</button>
+            <button id="analyze">⚡ Analyze</button>
+          </div>
+          <label for="payload">📨 Ticket JSON</label>
+          <textarea id="payload" spellcheck="false"></textarea>
+        </div>
+      </section>
+      <section>
+        <div class="panel">
+          <div class="toolbar">
+            <span class="status" id="resultStatus">Ready</span>
+          </div>
+          <label for="result">📊 Analysis Result</label>
+          <pre id="result">{}</pre>
+        </div>
+      </section>
     </main>
 
+    <footer>
+      <div class="footer-left">
+        <span>⚡ Team Null Pointers</span>
+        <div class="footer-links">
+          <a class="footer-link" href="https://www.linkedin.com/in/sm-mehedihasan25/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            S. M Mehedi
+          </a>
+          <a class="footer-link" href="https://www.linkedin.com/in/sumshun-nahar-eity-379646252/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            Sumshun Nahar
+          </a>
+          <a class="footer-link" href="https://www.linkedin.com/in/hasan-mahmud-karib-4879b732b/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            Hasan Mahmud
+          </a>
+        </div>
+      </div>
+      <div class="footer-right">
+        <a class="footer-link" href="https://github.com/sm-mehedi/Team_Null_Pointers_Codex_Sust_Submissing" target="_blank" rel="noopener" aria-label="GitHub repository">
+          <svg class="github-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span>repo</span>
+        </a>
+      </div>
+    </footer>
+
     <script>
-        // ─────────────────────────────────────────────
-        //  SAMPLE DATA (unchanged)
-        // ─────────────────────────────────────────────
+      (function(){
+        // ---- ORIGINAL LOGIC (unchanged) ----
         const sample = {
-            ticket_id: "TKT-DEMO-001",
-            complaint: "I sent 5000 taka to the wrong number around 2pm today. Please help.",
-            language: "en",
-            channel: "in_app_chat",
-            user_type: "customer",
-            campaign_context: "boishakh_bonanza_day_1",
-            transaction_history: [{
-                transaction_id: "TXN-9101",
-                timestamp: "2026-04-14T14:08:22Z",
-                type: "transfer",
-                amount: 5000,
-                counterparty: "+8801719876543",
-                status: "completed"
-            }]
+          ticket_id: "TKT-DEMO-001",
+          complaint: "I sent 5000 taka to the wrong number around 2pm today. Please help.",
+          language: "en",
+          channel: "in_app_chat",
+          user_type: "customer",
+          campaign_context: "boishakh_bonanza_day_1",
+          transaction_history: [
+            {
+              transaction_id: "TXN-9101",
+              timestamp: "2026-04-14T14:08:22Z",
+              type: "transfer",
+              amount: 5000,
+              counterparty: "+8801719876543",
+              status: "completed"
+            }
+          ]
         };
 
-        // ─────────────────────────────────────────────
-        //  DOM refs
-        // ─────────────────────────────────────────────
         const payload = document.getElementById("payload");
+        const result = document.getElementById("result");
         const resultStatus = document.getElementById("resultStatus");
-        const healthBadge = document.getElementById("healthBadge");
-        const healthText = document.getElementById("healthText");
-        const kpiContainer = document.getElementById("kpiContainer");
-        const evidenceContainer = document.getElementById("evidenceContainer");
-        const actionContainer = document.getElementById("actionContainer");
-        const replyContainer = document.getElementById("replyContainer");
-        const rawContent = document.getElementById("rawContent");
-        const rawDetails = document.getElementById("rawDetails");
+        const health = document.getElementById("health");
 
-        // ─────────────────────────────────────────────
-        //  helpers
-        // ─────────────────────────────────────────────
-        function pretty(obj) {
-            return JSON.stringify(obj, null, 2);
+        function pretty(value) {
+          return JSON.stringify(value, null, 2);
         }
 
-        function getSafe(obj, path, fallback = "-") {
-            try {
-                const parts = path.split(".");
-                let val = obj;
-                for (const p of parts) {
-                    if (val === null || val === undefined) return fallback;
-                    val = val[p];
-                }
-                return val !== undefined && val !== null ? val : fallback;
-            } catch {
-                return fallback;
-            }
-        }
-
-        function capitalize(str) {
-            if (!str) return "";
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        }
-
-        function labelCase(str) {
-            if (!str) return "-";
-            return str
-                .replace(/_/g, " ")
-                .replace(/\b\w/g, c => c.toUpperCase());
-        }
-
-        function severityClass(sev) {
-            if (!sev) return "badge-sev-default";
-            const s = sev.toLowerCase();
-            if (s === "critical") return "badge-sev-critical";
-            if (s === "high") return "badge-sev-high";
-            if (s === "medium") return "badge-sev-medium";
-            if (s === "low") return "badge-sev-low";
-            return "badge-sev-default";
-        }
-
-        function confidenceLevel(val) {
-            const n = Number(val);
-            if (isNaN(n)) return "medium";
-            if (n >= 80) return "high";
-            if (n >= 50) return "medium";
-            if (n >= 30) return "low";
-            return "critical";
-        }
-
-        function renderKpi(data) {
-            const tid = getSafe(data, "ticket_id", "—");
-            const ctype = getSafe(data, "case_type", "—");
-            const sev = getSafe(data, "severity", "—");
-            const dept = getSafe(data, "department", "—");
-            const conf = getSafe(data, "confidence", 0);
-            const hr = getSafe(data, "human_review_required", false);
-
-            const sevLabel = sev !== "-" ? capitalize(String(sev)) : "—";
-            const deptLabel = dept !== "-" ? labelCase(String(dept)) : "—";
-            const confNum = typeof conf === "number" ? conf : Number(conf);
-            const confDisplay = !isNaN(confNum) ? confNum + "%" : "—";
-            const confVal = !isNaN(confNum) ? Math.min(Math.max(confNum, 0), 100) : 0;
-            const confCls = confidenceLevel(confVal);
-            const hrLabel = hr === true ? "Required" : hr === false ? "Not Required" : "—";
-            const hrBadge = hr === true ? "badge-review-required" : hr === false ? "badge-review-not-required" :
-            "badge-review-default";
-
-            return `
-                <div class="kpi-grid">
-                    <div class="kpi-card">
-                        <div class="kpi-label">Ticket ID</div>
-                        <div class="kpi-value">${tid}</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-label">Case Type</div>
-                        <div class="kpi-value">${labelCase(String(ctype))}</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-label">Severity</div>
-                        <div class="kpi-value"><span class="badge ${severityClass(sev)}">${sevLabel}</span></div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-label">Department</div>
-                        <div class="kpi-value">${deptLabel}</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-label">Confidence</div>
-                        <div class="kpi-value">
-                            <div class="confidence-wrap">
-                                <div class="confidence-track">
-                                    <div class="confidence-fill ${confCls}" style="width:${confVal}%;"></div>
-                                </div>
-                                <span class="confidence-text">${confDisplay}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-label">Human Review</div>
-                        <div class="kpi-value"><span class="badge ${hrBadge}">${hrLabel}</span></div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderEvidence(codes) {
-            if (!codes || !Array.isArray(codes) || codes.length === 0) {
-                return `<div class="evidence-empty">No evidence codes available.</div>`;
-            }
-            let items = "";
-            for (const code of codes) {
-                const clean = String(code).trim();
-                if (!clean) continue;
-                items += `<li><span class="ev-icon" aria-hidden="true">✓</span><span class="ev-text">${clean}</span></li>`;
-            }
-            if (!items) {
-                return `<div class="evidence-empty">No evidence codes available.</div>`;
-            }
-            return `<ul class="evidence-list" role="list">${items}</ul>`;
-        }
-
-        function renderAction(action) {
-            if (!action || String(action).trim() === "") {
-                return `<div class="action-card" style="border-left-color:#b8c5d4;color:#8fa6c0;">No recommended action provided.</div>`;
-            }
-            return `<div class="action-card"><div class="action-label">Recommended Action</div>${String(action)}</div>`;
-        }
-
-        function renderReply(reply) {
-            if (!reply || String(reply).trim() === "") {
-                return `<div class="reply-card" style="color:#8fa6c0;">No customer reply available.</div>`;
-            }
-            return `<div class="reply-card"><div class="reply-label">Customer Reply</div>${String(reply)}</div>`;
-        }
-
-        function renderDashboard(data) {
-            // KPI
-            kpiContainer.innerHTML = renderKpi(data);
-
-            // Evidence
-            const codes = getSafe(data, "reason_codes", null);
-            evidenceContainer.innerHTML = renderEvidence(codes);
-
-            // Action
-            const action = getSafe(data, "recommended_next_action", "");
-            actionContainer.innerHTML = renderAction(action);
-
-            // Reply
-            const reply = getSafe(data, "customer_reply", "");
-            replyContainer.innerHTML = renderReply(reply);
-
-            // Raw JSON
-            rawContent.textContent = pretty(data);
-        }
-
-        function renderEmpty() {
-            kpiContainer.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon" aria-hidden="true">🔍</div>
-                    <div class="empty-title">Awaiting Analysis</div>
-                    <div class="empty-desc">Load or paste a ticket JSON and click <strong>Analyze Ticket</strong>.</div>
-                </div>
-            `;
-            evidenceContainer.innerHTML = `<div class="evidence-empty">No analysis data yet.</div>`;
-            actionContainer.innerHTML = ``;
-            replyContainer.innerHTML = ``;
-            rawContent.textContent = `{}`;
-            // keep raw details closed
-            if (rawDetails.open) rawDetails.open = false;
-        }
-
-        // ─────────────────────────────────────────────
-        //  API: health (UNCHANGED)
-        // ─────────────────────────────────────────────
         async function checkHealth() {
-            try {
-                const resp = await fetch("/health");
-                const data = await resp.json();
-                const ok = data && data.status === "ok";
-                healthBadge.className = "status-badge" + (ok ? " online" : " offline");
-                healthText.textContent = ok ? "API Online" : "API Unavailable";
-            } catch {
-                healthBadge.className = "status-badge offline";
-                healthText.textContent = "API Unavailable";
-            }
+          try {
+            const response = await fetch("/health");
+            const data = await response.json();
+            health.textContent = data.status === "ok" ? "API online" : "API unavailable";
+          } catch {
+            health.textContent = "API unavailable";
+            health.className = "status error";
+          }
         }
 
-        // ─────────────────────────────────────────────
-        //  API: analyze (UNCHANGED FETCH, changed render)
-        // ─────────────────────────────────────────────
-        document.getElementById("analyze").addEventListener("click", async () => {
-            resultStatus.textContent = "Analyzing…";
-            resultStatus.className = "panel-status";
-            try {
-                const body = JSON.parse(payload.value);
-                const response = await fetch("/analyze-ticket", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(body)
-                });
-                const data = await response.json();
-
-                if (response.ok) {
-                    renderDashboard(data);
-                    resultStatus.textContent = "Complete";
-                    resultStatus.className = "panel-status";
-                } else {
-                    // Still show the error data in raw view, but keep dashboard empty-ish
-                    kpiContainer.innerHTML = `
-                        <div class="empty-state" style="padding:24px 12px;">
-                            <div class="empty-icon" aria-hidden="true">⚠️</div>
-                            <div class="empty-title" style="color:#b91c1c;">HTTP ${response.status}</div>
-                            <div class="empty-desc">${data.message || data.detail || "An error occurred."}</div>
-                        </div>
-                    `;
-                    evidenceContainer.innerHTML = `<div class="evidence-empty">Error: ${response.status}</div>`;
-                    actionContainer.innerHTML = ``;
-                    replyContainer.innerHTML = ``;
-                    rawContent.textContent = pretty(data);
-                    resultStatus.textContent = `HTTP ${response.status}`;
-                    resultStatus.className = "panel-status error";
-                }
-            } catch (error) {
-                // JSON parse error or network error
-                kpiContainer.innerHTML = `
-                    <div class="empty-state" style="padding:24px 12px;">
-                        <div class="empty-icon" aria-hidden="true">❌</div>
-                        <div class="empty-title" style="color:#b91c1c;">Invalid Request</div>
-                        <div class="empty-desc">${String(error)}</div>
-                    </div>
-                `;
-                evidenceContainer.innerHTML = `<div class="evidence-empty">${String(error)}</div>`;
-                actionContainer.innerHTML = ``;
-                replyContainer.innerHTML = ``;
-                rawContent.textContent = String(error);
-                resultStatus.textContent = "Invalid request";
-                resultStatus.className = "panel-status error";
-            }
-        });
-
-        // ─────────────────────────────────────────────
-        //  Load Sample (UNCHANGED)
-        // ─────────────────────────────────────────────
         document.getElementById("loadSample").addEventListener("click", () => {
-            payload.value = pretty(sample);
+          payload.value = pretty(sample);
         });
 
-        // ─────────────────────────────────────────────
-        //  Init
-        // ─────────────────────────────────────────────
+        document.getElementById("analyze").addEventListener("click", async () => {
+          resultStatus.textContent = "Analyzing...";
+          resultStatus.className = "status";
+          try {
+            const body = JSON.parse(payload.value);
+            const response = await fetch("/analyze-ticket", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body)
+            });
+            const data = await response.json();
+            result.textContent = pretty(data);
+            resultStatus.textContent = response.ok ? "Complete" : `HTTP ${response.status}`;
+            resultStatus.className = response.ok ? "status" : "status error";
+          } catch (error) {
+            result.textContent = String(error);
+            resultStatus.textContent = "Invalid request";
+            resultStatus.className = "status error";
+          }
+        });
+
         payload.value = pretty(sample);
-        renderEmpty();
         checkHealth();
 
-        // ─────────────────────────────────────────────
-        //  Auto-render if the response already has data?
-        //  (we keep the empty state on load; user must click Analyze)
-        // ─────────────────────────────────────────────
+        // ---- RETRO DAY/NIGHT TOGGLE (no logic change, only theme) ----
+        const toggleBtn = document.getElementById('modeToggle');
+        const body = document.body;
 
-        console.log("QueueStorm Investigator · Enterprise Dashboard");
+        // read initial preference from localStorage
+        const stored = localStorage.getItem('queueStormTheme');
+        if (stored === 'night') {
+          body.classList.add('night');
+          toggleBtn.textContent = '☀️ day';
+        } else {
+          body.classList.remove('night');
+          toggleBtn.textContent = '🌙 night';
+        }
+
+        toggleBtn.addEventListener('click', function() {
+          body.classList.toggle('night');
+          const isNight = body.classList.contains('night');
+          toggleBtn.textContent = isNight ? '☀️ day' : '🌙 night';
+          localStorage.setItem('queueStormTheme', isNight ? 'night' : 'day');
+        });
+      })();
     </script>
-
-</body>
+  </body>
 </html>
